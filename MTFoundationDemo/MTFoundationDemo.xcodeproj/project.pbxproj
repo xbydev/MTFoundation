@@ -7,6 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		81A85D671D1925A90023249A /* PLObjectModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A85D661D1925A90023249A /* PLObjectModel.m */; };
+		81A85D791D1927150023249A /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A85D6D1D1927150023249A /* FMDatabase.m */; };
+		81A85D7A1D1927150023249A /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A85D6F1D1927150023249A /* FMDatabaseAdditions.m */; };
+		81A85D7B1D1927150023249A /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A85D711D1927150023249A /* FMDatabasePool.m */; };
+		81A85D7C1D1927150023249A /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A85D731D1927150023249A /* FMDatabaseQueue.m */; };
+		81A85D7D1D1927150023249A /* FMObjectTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A85D761D1927150023249A /* FMObjectTable.m */; };
+		81A85D7E1D1927150023249A /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A85D781D1927150023249A /* FMResultSet.m */; };
+		81A85D851D192B350023249A /* NSFileManager+mt.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A85D841D192B350023249A /* NSFileManager+mt.m */; };
+		81A85D881D192C080023249A /* NSObject+mt.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A85D871D192C080023249A /* NSObject+mt.m */; };
+		81A85D8B1D192CEC0023249A /* NSDate+mt.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A85D8A1D192CEC0023249A /* NSDate+mt.m */; };
+		81A85D8E1D1930900023249A /* NSString+mt.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A85D8D1D1930900023249A /* NSString+mt.m */; };
+		81A85D911D1934D40023249A /* UIColor+mt.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A85D901D1934D40023249A /* UIColor+mt.m */; };
+		81A85D941D1936730023249A /* UIImage+mt.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A85D931D1936730023249A /* UIImage+mt.m */; };
 		81C2B26E1D17B8EB0099D8BF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 81C2B26D1D17B8EB0099D8BF /* main.m */; };
 		81C2B2711D17B8EB0099D8BF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 81C2B2701D17B8EB0099D8BF /* AppDelegate.m */; };
 		81C2B2741D17B8EB0099D8BF /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81C2B2731D17B8EB0099D8BF /* ViewController.m */; };
@@ -29,6 +42,34 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		81A85D641D1922D10023249A /* iMacro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iMacro.h; sourceTree = "<group>"; };
+		81A85D651D1925A90023249A /* PLObjectModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLObjectModel.h; sourceTree = "<group>"; };
+		81A85D661D1925A90023249A /* PLObjectModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLObjectModel.m; sourceTree = "<group>"; };
+		81A85D6C1D1927150023249A /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabase.h; sourceTree = "<group>"; };
+		81A85D6D1D1927150023249A /* FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabase.m; sourceTree = "<group>"; };
+		81A85D6E1D1927150023249A /* FMDatabaseAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseAdditions.h; sourceTree = "<group>"; };
+		81A85D6F1D1927150023249A /* FMDatabaseAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseAdditions.m; sourceTree = "<group>"; };
+		81A85D701D1927150023249A /* FMDatabasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabasePool.h; sourceTree = "<group>"; };
+		81A85D711D1927150023249A /* FMDatabasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabasePool.m; sourceTree = "<group>"; };
+		81A85D721D1927150023249A /* FMDatabaseQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseQueue.h; sourceTree = "<group>"; };
+		81A85D731D1927150023249A /* FMDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseQueue.m; sourceTree = "<group>"; };
+		81A85D741D1927150023249A /* FMObjectProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMObjectProtocol.h; sourceTree = "<group>"; };
+		81A85D751D1927150023249A /* FMObjectTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMObjectTable.h; sourceTree = "<group>"; };
+		81A85D761D1927150023249A /* FMObjectTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMObjectTable.m; sourceTree = "<group>"; };
+		81A85D771D1927150023249A /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
+		81A85D781D1927150023249A /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
+		81A85D831D192B350023249A /* NSFileManager+mt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSFileManager+mt.h"; sourceTree = "<group>"; };
+		81A85D841D192B350023249A /* NSFileManager+mt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFileManager+mt.m"; sourceTree = "<group>"; };
+		81A85D861D192C080023249A /* NSObject+mt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+mt.h"; sourceTree = "<group>"; };
+		81A85D871D192C080023249A /* NSObject+mt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+mt.m"; sourceTree = "<group>"; };
+		81A85D891D192CEC0023249A /* NSDate+mt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+mt.h"; sourceTree = "<group>"; };
+		81A85D8A1D192CEC0023249A /* NSDate+mt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+mt.m"; sourceTree = "<group>"; };
+		81A85D8C1D1930900023249A /* NSString+mt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+mt.h"; sourceTree = "<group>"; };
+		81A85D8D1D1930900023249A /* NSString+mt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+mt.m"; sourceTree = "<group>"; };
+		81A85D8F1D1934D40023249A /* UIColor+mt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+mt.h"; sourceTree = "<group>"; };
+		81A85D901D1934D40023249A /* UIColor+mt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+mt.m"; sourceTree = "<group>"; };
+		81A85D921D1936730023249A /* UIImage+mt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+mt.h"; sourceTree = "<group>"; };
+		81A85D931D1936730023249A /* UIImage+mt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+mt.m"; sourceTree = "<group>"; };
 		81C2B2691D17B8EB0099D8BF /* MTFoundationDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MTFoundationDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		81C2B26D1D17B8EB0099D8BF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		81C2B26F1D17B8EB0099D8BF /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -138,6 +179,19 @@
 		81C2B2841D17B9710099D8BF /* Category */ = {
 			isa = PBXGroup;
 			children = (
+				81A85D641D1922D10023249A /* iMacro.h */,
+				81A85D831D192B350023249A /* NSFileManager+mt.h */,
+				81A85D841D192B350023249A /* NSFileManager+mt.m */,
+				81A85D861D192C080023249A /* NSObject+mt.h */,
+				81A85D871D192C080023249A /* NSObject+mt.m */,
+				81A85D891D192CEC0023249A /* NSDate+mt.h */,
+				81A85D8A1D192CEC0023249A /* NSDate+mt.m */,
+				81A85D8C1D1930900023249A /* NSString+mt.h */,
+				81A85D8D1D1930900023249A /* NSString+mt.m */,
+				81A85D8F1D1934D40023249A /* UIColor+mt.h */,
+				81A85D901D1934D40023249A /* UIColor+mt.m */,
+				81A85D921D1936730023249A /* UIImage+mt.h */,
+				81A85D931D1936730023249A /* UIImage+mt.m */,
 			);
 			path = Category;
 			sourceTree = "<group>";
@@ -145,6 +199,19 @@
 		81C2B2851D17B9710099D8BF /* FMDB */ = {
 			isa = PBXGroup;
 			children = (
+				81A85D6C1D1927150023249A /* FMDatabase.h */,
+				81A85D6D1D1927150023249A /* FMDatabase.m */,
+				81A85D6E1D1927150023249A /* FMDatabaseAdditions.h */,
+				81A85D6F1D1927150023249A /* FMDatabaseAdditions.m */,
+				81A85D701D1927150023249A /* FMDatabasePool.h */,
+				81A85D711D1927150023249A /* FMDatabasePool.m */,
+				81A85D721D1927150023249A /* FMDatabaseQueue.h */,
+				81A85D731D1927150023249A /* FMDatabaseQueue.m */,
+				81A85D741D1927150023249A /* FMObjectProtocol.h */,
+				81A85D751D1927150023249A /* FMObjectTable.h */,
+				81A85D761D1927150023249A /* FMObjectTable.m */,
+				81A85D771D1927150023249A /* FMResultSet.h */,
+				81A85D781D1927150023249A /* FMResultSet.m */,
 			);
 			path = FMDB;
 			sourceTree = "<group>";
@@ -152,6 +219,8 @@
 		81C2B2861D17B9710099D8BF /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				81A85D651D1925A90023249A /* PLObjectModel.h */,
+				81A85D661D1925A90023249A /* PLObjectModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -275,8 +344,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81A85D911D1934D40023249A /* UIColor+mt.m in Sources */,
 				81C2B2741D17B8EB0099D8BF /* ViewController.m in Sources */,
 				81C2B2711D17B8EB0099D8BF /* AppDelegate.m in Sources */,
+				81A85D671D1925A90023249A /* PLObjectModel.m in Sources */,
+				81A85D791D1927150023249A /* FMDatabase.m in Sources */,
 				81C2B2AE1D17B9710099D8BF /* SBJsonStreamWriterAccumulator.m in Sources */,
 				81C2B2AA1D17B9710099D8BF /* SBJsonStreamParserAccumulator.m in Sources */,
 				81C2B2AC1D17B9710099D8BF /* SBJsonStreamParserState.m in Sources */,
@@ -285,12 +357,22 @@
 				81C2B2AF1D17B9710099D8BF /* SBJsonStreamWriterState.m in Sources */,
 				81C2B2A81D17B9710099D8BF /* SBJsonParser.m in Sources */,
 				81C2B2B11D17B9710099D8BF /* SBJsonUTF8Stream.m in Sources */,
+				81A85D7D1D1927150023249A /* FMObjectTable.m in Sources */,
+				81A85D851D192B350023249A /* NSFileManager+mt.m in Sources */,
 				81C2B2A91D17B9710099D8BF /* SBJsonStreamParser.m in Sources */,
 				81C2B2B01D17B9710099D8BF /* SBJsonTokeniser.m in Sources */,
 				81C2B2A71D17B9710099D8BF /* NSObject+SBJson.m in Sources */,
+				81A85D881D192C080023249A /* NSObject+mt.m in Sources */,
+				81A85D7A1D1927150023249A /* FMDatabaseAdditions.m in Sources */,
+				81A85D7E1D1927150023249A /* FMResultSet.m in Sources */,
 				81C2B2A61D17B9710099D8BF /* NSData+SBJson.m in Sources */,
+				81A85D7C1D1927150023249A /* FMDatabaseQueue.m in Sources */,
+				81A85D7B1D1927150023249A /* FMDatabasePool.m in Sources */,
+				81A85D8B1D192CEC0023249A /* NSDate+mt.m in Sources */,
 				81C2B2AD1D17B9710099D8BF /* SBJsonStreamWriter.m in Sources */,
+				81A85D8E1D1930900023249A /* NSString+mt.m in Sources */,
 				81C2B2AB1D17B9710099D8BF /* SBJsonStreamParserAdapter.m in Sources */,
+				81A85D941D1936730023249A /* UIImage+mt.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -441,6 +523,7 @@
 				81C2B2821D17B8EB0099D8BF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
