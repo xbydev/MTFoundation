@@ -280,9 +280,7 @@
     return nil;
 }
 
-- (NSInteger)find:(NSString *)str fromIndex:(NSInteger)fromInex reverse:(BOOL)reverse
-{
-    
+- (NSInteger)find:(NSString *)str fromIndex:(NSInteger)fromInex reverse:(BOOL)reverse{
     return [self find:str fromIndex:fromInex reverse:reverse caseSensitive:NO];
 }
 
