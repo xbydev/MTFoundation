@@ -303,8 +303,7 @@
     return [self find:str fromIndex:fromInex reverse:NO];
 }
 
-- (NSInteger)find:(NSString *)str
-{
+- (NSInteger)find:(NSString *)str{
     return [self find:str fromIndex:0];
 }
 
