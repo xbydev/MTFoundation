@@ -13,6 +13,7 @@ project.xcworkspace
 !default.xcworkspace
 xcuserdata
 *.xccheckout
+*.xcuserstate
 *.moved-aside
 DerivedData
 *.hmap

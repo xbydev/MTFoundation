@@ -284,8 +284,7 @@
     return [self find:str fromIndex:fromInex reverse:reverse caseSensitive:NO];
 }
 
-- (NSInteger)find:(NSString *)str fromIndex:(NSInteger)fromInex reverse:(BOOL)reverse caseSensitive:(BOOL)caseSensitive
-{
+- (NSInteger)find:(NSString *)str fromIndex:(NSInteger)fromInex reverse:(BOOL)reverse caseSensitive:(BOOL)caseSensitive{
     if (fromInex > self.length) {
         return -1;
     }
