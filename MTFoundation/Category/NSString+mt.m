@@ -299,8 +299,7 @@
     return range.location == NSNotFound ? -1 : range.location;
 }
 
-- (NSInteger)find:(NSString *)str fromIndex:(NSInteger)fromInex
-{
+- (NSInteger)find:(NSString *)str fromIndex:(NSInteger)fromInex{
     return [self find:str fromIndex:fromInex reverse:NO];
 }
 
