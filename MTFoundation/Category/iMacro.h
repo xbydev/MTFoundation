@@ -32,6 +32,8 @@
 
 #define SCREEN_HEIGHT [UIScreen mainScreen].bounds.size.height
 
+#define UIViewAutoresizingFlexibleSize (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight)
+
 #define DEVICE_IS_IPAD  ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad)
 
 #define DEVICE_IS_IPHONE  ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone)
@@ -75,5 +77,21 @@
 
 #pragma mark other
 #define RANDOM_0_1 (arc4random() / (float)0x100000000)
+
+#define REG_NOTIFY(s, n) [[NSNotificationCenter defaultCenter] addObserver:self selector:s name:n object:nil];
+
+#define POST_NOTIFY(n, o, u) [[NSNotificationCenter defaultCenter] postNotificationName:n object:o userInfo:u]
+
+#define DOCUMENTS_PATH(path) [NSFileManager pathInDocuments:path]
+
+#define LIBRARY_PATH(path) [NSFileManager pathInLibrary:path]
+
+#define LOCAL(a) NSLocalizedString(a, nil)
+
+#define SET_PROPERTY(_p, p) _p = p; //[p retain];[_p release]; _p = p;
+
+#define RNIL(obj) obj = nil;  //[obj release]; obj = nil;
+
+#define RRNIL(view) [view removeFromSuperview]; view = nil;
 
 #endif /* iMacro_h */
