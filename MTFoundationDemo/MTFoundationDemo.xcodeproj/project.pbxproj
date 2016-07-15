@@ -23,6 +23,8 @@
 		813D8B651D23DD4400781E8D /* CxToast.m in Sources */ = {isa = PBXBuildFile; fileRef = 813D8B5B1D23DD4400781E8D /* CxToast.m */; };
 		813D8B661D23DD4400781E8D /* CxURLImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 813D8B5D1D23DD4400781E8D /* CxURLImageView.m */; };
 		813D8B691D23E21F00781E8D /* UIGraphics+mt.m in Sources */ = {isa = PBXBuildFile; fileRef = 813D8B681D23E21F00781E8D /* UIGraphics+mt.m */; };
+		81829CBF1D38DB4F007D4ACF /* AsynURLImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 81829CBE1D38DB4F007D4ACF /* AsynURLImageView.m */; };
+		81829CC21D38DD99007D4ACF /* BounceButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 81829CC11D38DD99007D4ACF /* BounceButton.m */; };
 		81A85D671D1925A90023249A /* PLObjectModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A85D661D1925A90023249A /* PLObjectModel.m */; };
 		81A85D791D1927150023249A /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A85D6D1D1927150023249A /* FMDatabase.m */; };
 		81A85D7A1D1927150023249A /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A85D6F1D1927150023249A /* FMDatabaseAdditions.m */; };
@@ -89,6 +91,10 @@
 		813D8B5D1D23DD4400781E8D /* CxURLImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CxURLImageView.m; sourceTree = "<group>"; };
 		813D8B671D23E21F00781E8D /* UIGraphics+mt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIGraphics+mt.h"; sourceTree = "<group>"; };
 		813D8B681D23E21F00781E8D /* UIGraphics+mt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIGraphics+mt.m"; sourceTree = "<group>"; };
+		81829CBD1D38DB4F007D4ACF /* AsynURLImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsynURLImageView.h; sourceTree = "<group>"; };
+		81829CBE1D38DB4F007D4ACF /* AsynURLImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AsynURLImageView.m; sourceTree = "<group>"; };
+		81829CC01D38DD99007D4ACF /* BounceButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BounceButton.h; sourceTree = "<group>"; };
+		81829CC11D38DD99007D4ACF /* BounceButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BounceButton.m; sourceTree = "<group>"; };
 		81A85D641D1922D10023249A /* iMacro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iMacro.h; sourceTree = "<group>"; };
 		81A85D651D1925A90023249A /* PLObjectModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLObjectModel.h; sourceTree = "<group>"; };
 		81A85D661D1925A90023249A /* PLObjectModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLObjectModel.m; sourceTree = "<group>"; };
@@ -207,6 +213,17 @@
 			path = Widget;
 			sourceTree = "<group>";
 		};
+		81829CBC1D38DAFB007D4ACF /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				81829CBD1D38DB4F007D4ACF /* AsynURLImageView.h */,
+				81829CBE1D38DB4F007D4ACF /* AsynURLImageView.m */,
+				81829CC01D38DD99007D4ACF /* BounceButton.h */,
+				81829CC11D38DD99007D4ACF /* BounceButton.m */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
 		81C2B2601D17B8EB0099D8BF = {
 			isa = PBXGroup;
 			children = (
@@ -258,6 +275,7 @@
 				813D8B411D23BEB400781E8D /* Network */,
 				81C2B2881D17B9710099D8BF /* SBJson */,
 				813D8B4B1D23DD4400781E8D /* Widget */,
+				81829CBC1D38DAFB007D4ACF /* UI */,
 			);
 			name = MTFoundation;
 			path = ../MTFoundation;
@@ -442,6 +460,7 @@
 				81C2B2B11D17B9710099D8BF /* SBJsonUTF8Stream.m in Sources */,
 				813D8B5F1D23DD4400781E8D /* CxCollectionView.m in Sources */,
 				81A85D7D1D1927150023249A /* FMObjectTable.m in Sources */,
+				81829CBF1D38DB4F007D4ACF /* AsynURLImageView.m in Sources */,
 				813D8B641D23DD4400781E8D /* CxRatingDialog.m in Sources */,
 				81A85D851D192B350023249A /* NSFileManager+mt.m in Sources */,
 				81C2B2A91D17B9710099D8BF /* SBJsonStreamParser.m in Sources */,
@@ -459,6 +478,7 @@
 				813D8B691D23E21F00781E8D /* UIGraphics+mt.m in Sources */,
 				81C2B2AD1D17B9710099D8BF /* SBJsonStreamWriter.m in Sources */,
 				81A85D8E1D1930900023249A /* NSString+mt.m in Sources */,
+				81829CC21D38DD99007D4ACF /* BounceButton.m in Sources */,
 				813D8B651D23DD4400781E8D /* CxToast.m in Sources */,
 				81C2B2AB1D17B9710099D8BF /* SBJsonStreamParserAdapter.m in Sources */,
 				813D8B631D23DD4400781E8D /* CxPageView.m in Sources */,
