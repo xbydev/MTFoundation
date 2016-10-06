@@ -57,6 +57,7 @@
 		81C2B2B01D17B9710099D8BF /* SBJsonTokeniser.m in Sources */ = {isa = PBXBuildFile; fileRef = 81C2B2A01D17B9710099D8BF /* SBJsonTokeniser.m */; };
 		81C2B2B11D17B9710099D8BF /* SBJsonUTF8Stream.m in Sources */ = {isa = PBXBuildFile; fileRef = 81C2B2A21D17B9710099D8BF /* SBJsonUTF8Stream.m */; };
 		81C2B2B21D17B9710099D8BF /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 81C2B2A41D17B9710099D8BF /* SBJsonWriter.m */; };
+		81C795B61DA6B5BA00987B0E /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 81C795B51DA6B5BA00987B0E /* libsqlite3.0.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -161,6 +162,7 @@
 		81C2B2A21D17B9710099D8BF /* SBJsonUTF8Stream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonUTF8Stream.m; sourceTree = "<group>"; };
 		81C2B2A31D17B9710099D8BF /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
 		81C2B2A41D17B9710099D8BF /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
+		81C795B51DA6B5BA00987B0E /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -168,6 +170,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81C795B61DA6B5BA00987B0E /* libsqlite3.0.tbd in Frameworks */,
 				813D8B3D1D23857700781E8D /* QuartzCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -231,6 +234,7 @@
 				81C2B2831D17B9710099D8BF /* MTFoundation */,
 				81C2B26B1D17B8EB0099D8BF /* MTFoundationDemo */,
 				81C2B26A1D17B8EB0099D8BF /* Products */,
+				81C795B41DA6B5BA00987B0E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -369,6 +373,14 @@
 				81C2B2A41D17B9710099D8BF /* SBJsonWriter.m */,
 			);
 			path = SBJson;
+			sourceTree = "<group>";
+		};
+		81C795B41DA6B5BA00987B0E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				81C795B51DA6B5BA00987B0E /* libsqlite3.0.tbd */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
