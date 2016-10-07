@@ -109,7 +109,7 @@ Pod::Spec.new do |s|
   #  the lib prefix of their name.
   #
 
-  s.framework  = "QuartzCore"
+  s.framework  = "QuartzCore","Foundation","CoreGraphics","UIKit"
   # s.frameworks = "SomeFramework", "AnotherFramework"
 
   s.library   = "sqlite3"
