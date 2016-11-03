@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "MTFoundation"
-  s.version      = "1.0.2"
+  s.version      = "0.0.1"
   s.summary      = "It's contains the basic and convenient categories,amazing UI. When imported the foundation,You can focus on you business."
 
   # This description is used to generate tags and improve search results.
@@ -72,7 +72,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "https://github.com/xbydev/MTFoundation.git", :tag => s.version.to_s }
+  s.source       = { :git => "https://github.com/xbydev/MTFoundation.git", :tag => "0.0.1" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -109,10 +109,10 @@ Pod::Spec.new do |s|
   #  the lib prefix of their name.
   #
 
-  s.framework  = "QuartzCore","Foundation","CoreGraphics","UIKit"
+  # s.framework  = "SomeFramework"
   # s.frameworks = "SomeFramework", "AnotherFramework"
 
-  s.library   = "sqlite3"
+  # s.library   = "iconv"
   # s.libraries = "iconv", "xml2"
 
 
