@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "MTFoundation"
-  s.version      = "1.0.1"
+  s.version      = "2.0.0"
   s.summary      = "It's contains the basic and convenient categories,amazing UI. When imported the foundation,You can focus on you business."
 
   # This description is used to generate tags and improve search results.
