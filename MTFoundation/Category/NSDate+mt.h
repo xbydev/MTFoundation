@@ -42,6 +42,8 @@
 
 -(NSString *) weiboTimeline;
 
+-(NSString *)descriptionForYM;
+
 -(NSString *)descriptionForYMD;
 
 -(NSString *)descriptionForYMDT;

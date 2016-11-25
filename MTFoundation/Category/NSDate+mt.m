@@ -143,6 +143,13 @@
     }
 }
 
+-(NSString *)descriptionForYM{
+    NSCalendar* calendar = [NSCalendar currentCalendar];
+    NSDateComponents* comp = [calendar components:
+                              NSYearCalendarUnit|NSMonthCalendarUnit fromDate:self];
+    return [NSString stringWithFormat:@"%zd-%.2zd",comp.year,comp.month];
+}
+
 -(NSString *)descriptionForYMD {
     NSCalendar* calendar = [NSCalendar currentCalendar];
     NSDateComponents* comp = [calendar components:
