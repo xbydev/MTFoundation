@@ -146,7 +146,7 @@ static NSString *const kVideoPath = @"MTVideo";
     }
 }
 
-- (void)compositionVideoWithImage:(NSArray<UIImage *> *)images videoName:(NSString *)videoName duration:(NSInteger)duration success:(SuccessBlcok _Nullable)successBlcok
+- (void)compositionVideoWithImage:(NSArray<UIImage *> *)images videoName:(NSString *)videoName videoSize:(CGSize)videoSize duration:(NSInteger)duration success:(SuccessBlcok _Nullable)successBlcok
 {
     NSCAssert(videoName.length > 0, @"请输入转换后的名字");
     NSString *outPutFilePath = [[self videoPath] stringByAppendingPathComponent:videoName];
@@ -161,7 +161,10 @@ static NSString *const kVideoPath = @"MTVideo";
     BOOL success = (assetWriter != nil);
     
     //视频尺寸
-    CGSize size = CGSizeMake(320, 480);
+    CGSize size = videoSize;
+    if (CGSizeEqualToSize(size, CGSizeZero)) {
+        size = CGSizeMake(480, 480);
+    }
     //meaning that it must contain AVVideoCodecKey, AVVideoWidthKey, and AVVideoHeightKey.
     //视频信息设置
     //    NSDictionary *outPutSettingDic = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -321,7 +324,7 @@ static NSString *const kVideoPath = @"MTVideo";
                             //meaning that it must contain AVVideoCodecKey, AVVideoWidthKey, and AVVideoHeightKey.
                             //视频信息设置
                             NSDictionary *outPutSettingDic = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                              AVVideoCodecTypeH264,AVVideoCodecKey,
+                                                              AVVideoCodecH264,AVVideoCodecKey,
                                                               [NSNumber numberWithInt:size.width],AVVideoWidthKey,
                                                               [NSNumber numberWithInt:size.height],AVVideoHeightKey, nil];
                             
@@ -664,10 +667,10 @@ static NSString *const kVideoPath = @"MTVideo";
 }
 
 
-- (void)compositionVideoWithImage:(NSArray <UIImage *>*_Nonnull)images imageDuration:(CGFloat)duration videoName:(NSString *_Nonnull)videoName audio:(NSURL*_Nullable)audioUrl success:(SuccessBlcok _Nullable )successBlcok{
+- (void)compositionVideoWithImage:(NSArray <UIImage *>*_Nonnull)images videoSize:(CGSize)videoSize imageDuration:(CGFloat)duration videoName:(NSString *_Nonnull)videoName audio:(NSURL*_Nullable)audioUrl success:(SuccessBlcok _Nullable )successBlcok{
     if (!audioUrl) {
 //        [self compositionVideoWithImage:images videoName:videoName success:successBlcok];
-        [self compositionVideoWithImage:images videoName:videoName duration:duration success:successBlcok];
+        [self compositionVideoWithImage:images videoName:videoName videoSize:videoSize duration:duration success:successBlcok];
     }else{
         NSCAssert(videoName.length > 0, @"请输入转换后的名字");
         NSString *outPutFilePath = [[self videoPath] stringByAppendingPathComponent:videoName];
@@ -749,7 +752,10 @@ static NSString *const kVideoPath = @"MTVideo";
                             
                             //--------------图片写入视频设置
                             //视频尺寸
-                            CGSize size = CGSizeMake(320, 480);
+                            CGSize size = videoSize;
+                            if (CGSizeEqualToSize(size, CGSizeZero)) {
+                                size = CGSizeMake(480, 480);
+                            }
                             //meaning that it must contain AVVideoCodecKey, AVVideoWidthKey, and AVVideoHeightKey.
                             //视频信息设置
                             NSDictionary *outPutSettingDic = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -922,13 +928,13 @@ static NSString *const kVideoPath = @"MTVideo";
     AVMutableComposition *mutableComposition = [AVMutableComposition composition];
     //合成轨道
     AVMutableCompositionTrack *videoCompositionTrack = [mutableComposition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
-    AVMutableCompositionTrack *audioCompositionTrack = [mutableComposition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+//    AVMutableCompositionTrack *audioCompositionTrack = [mutableComposition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
     //视频采集
     AVAssetTrack *videoAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
-    AVAssetTrack *audioAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0];
+//    AVAssetTrack *audioAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0];
     //加入合成轨道
     [videoCompositionTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, videoAssetTrack.timeRange.duration) ofTrack:videoAssetTrack atTime:kCMTimeZero error:nil];
-    [audioCompositionTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, audioAssetTrack.timeRange.duration) ofTrack:audioAssetTrack atTime:kCMTimeZero error:nil];
+//    [audioCompositionTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, audioAssetTrack.timeRange.duration) ofTrack:audioAssetTrack atTime:kCMTimeZero error:nil];
     //创建合成指令
     AVMutableVideoCompositionInstruction *videoCompostionInstruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
     //设置时间范围
@@ -963,7 +969,7 @@ static NSString *const kVideoPath = @"MTVideo";
     AVMutableVideoComposition *mutableVideoComposition = [AVMutableVideoComposition videoComposition];
     //必须设置 下面的尺寸和时间
     mutableVideoComposition.renderSize = naturalSize;
-    mutableVideoComposition.frameDuration = CMTimeMake(1, 25);//videoAssetTrack.timeRange.duration;
+    mutableVideoComposition.frameDuration = CMTimeMake(1, 30);//videoAssetTrack.timeRange.duration;
     mutableVideoComposition.instructions = @[videoCompostionInstruction];
     
 //    [self addWaterLayerWithAVMutableVideoComposition:mutableVideoComposition];
@@ -1040,13 +1046,15 @@ static NSString *const kVideoPath = @"MTVideo";
             [textLayer setFontSize:info.fontSize];
             [textLayer setString:text];
             [textLayer setAlignmentMode:kCAAlignmentCenter];
-            [textLayer setForegroundColor:[[UIColor whiteColor] CGColor]];
-            
+            [textLayer setForegroundColor:info.textColor.CGColor];
+
             CGSize textSize = [text sizeWithAttributes:[NSDictionary dictionaryWithObjectsAndKeys:font,NSFontAttributeName, nil]];
             CGFloat textH = textSize.height + 10;
-            
-            [textLayer setFrame:CGRectMake(100, mutableVideoComposition.renderSize.height-100, textSize.width + 20, textH)];
-            
+
+//            [textLayer setFrame:CGRectMake(100, mutableVideoComposition.renderSize.height-100, textSize.width + 20, textH)];
+
+            [textLayer setFrame:CGRectMake(0, mutableVideoComposition.renderSize.height - info.startY, mutableVideoComposition.renderSize.width, textH)];
+
             [parentLayer addSublayer:textLayer];
         }
     }

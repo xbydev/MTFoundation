@@ -67,8 +67,7 @@
  @param successBlcok 返回视频地址
  */
 
-- (void)compositionVideoWithImage:(NSArray <UIImage *>*_Nonnull)images imageDuration:(CGFloat)duration videoName:(NSString *_Nonnull)videoName audio:(NSURL*_Nullable)audioUrl success:(SuccessBlcok _Nullable )successBlcok;
-
+- (void)compositionVideoWithImage:(NSArray <UIImage *>*_Nonnull)images videoSize:(CGSize)videoSize imageDuration:(CGFloat)duration videoName:(NSString *_Nonnull)videoName audio:(NSURL*_Nullable)audioUrl success:(SuccessBlcok _Nullable )successBlcok;
 
 /**
  给视频添加文字水印
