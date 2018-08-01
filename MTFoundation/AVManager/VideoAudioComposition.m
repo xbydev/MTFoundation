@@ -192,7 +192,7 @@ static NSString *const kCompositionPath = @"GLComposition";
     instruction.layerInstructions = @[layerInstruction];
     mutableVideoComposition.instructions = @[instruction];
     
-    NSString *outPutFilePath = [[self compositionPath] stringByAppendingPathComponent:@"rrr.mp4"];
+    NSString *outPutFilePath = [[self compositionPath] stringByAppendingPathComponent:self.compositionName];
     //存在该文件
     if ([MTFileManager fileExistsAtPath:outPutFilePath]) {
         [MTFileManager clearCachesWithFilePath:outPutFilePath];
