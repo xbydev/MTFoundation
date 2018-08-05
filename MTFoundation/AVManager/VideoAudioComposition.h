@@ -12,6 +12,10 @@
 
 @interface VideoAudioComposition : NSObject
 
+@property(nonatomic, strong) AVMutableComposition *composition;
+
+@property(nonatomic, strong) AVMutableVideoComposition *videoComposition;
+
 /**
  合成后的名字
  */
@@ -80,5 +84,9 @@
 - (void)roateVideo:(NSURL *)videoUrl withDegree:(NSInteger)degree success:(SuccessBlcok)successBlcok;
 
 - (void)replaceAudioInVideo:(NSURL *)videoUrl withAudio:(NSURL *)audioUrl atRange:(CMTimeRange)timeRange atVolume:(CGFloat)volume success:(SuccessBlcok)successBlcok;
+
+- (void)preClipVideo:(NSURL *)videoUrl atStartTime:(CGFloat)startTime stopTime:(CGFloat)stopTime success:(PreSuccessBlcok)successBlcok;
+
+- (void)clipVideo:(NSURL *)videoUrl atStartTime:(CGFloat)startTime stopTime:(CGFloat)stopTime success:(SuccessBlcok)successBlcok;
 
 @end

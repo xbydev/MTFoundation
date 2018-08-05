@@ -27,6 +27,13 @@ typedef void(^SuccessBlcok)(NSURL *fileUrl);
 
 
 /**
+ 预处理成功block
+ @param asset 预处理成功
+ */
+typedef void(^PreSuccessBlcok)(AVPlayerItem *playItem);
+
+
+/**
  合成进度block
  @param progress 进度
  */

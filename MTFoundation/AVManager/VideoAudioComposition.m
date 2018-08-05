@@ -107,9 +107,9 @@ static NSString *const kCompositionPath = @"GLComposition";
     // 处理音频轨
     [[composition tracksWithMediaType:AVMediaTypeAudio] enumerateObjectsUsingBlock:^(AVMutableCompositionTrack * _Nonnull audioTrack, NSUInteger idx, BOOL * _Nonnull stop) {
         // 这里需要注意，如果音频和视频的timescale不一致，那么这里需要重新计算音频需要裁剪的区间，否则会出现音频视频裁剪区间错位的问题
-        [audioTrack removeTimeRange:CMTimeRangeMake(kCMTimeZero, CMTimeMake(2, 1))]; //消音
+//        [audioTrack removeTimeRange:CMTimeRangeMake(kCMTimeZero, CMTimeMake(2, 1))]; //消音
         //        [audioTrack insertEmptyTimeRange:CMTimeRangeMake(kCMTimeZero, CMTimeMake(5, timeScale))];
-        //        [audioTrack scaleTimeRange:fastRange toDuration:scaledDuration];
+                [audioTrack scaleTimeRange:fastRange toDuration:scaledDuration];
     }];
     
     NSString *outPutFilePath = [[self compositionPath] stringByAppendingPathComponent:@"abc.mp4"];
@@ -460,6 +460,110 @@ static NSString *const kCompositionPath = @"GLComposition";
         [MTFileManager clearCachesWithFilePath:outPutFilePath];
     }
     [self composition:mutableComposition videoCompositon:nil audioMix:mutableAudioMix storePath:outPutFilePath success:successBlcok];
+}
+
+- (void)preClipVideo:(NSURL *)videoUrl atStartTime:(CGFloat)startTime stopTime:(CGFloat)stopTime success:(PreSuccessBlcok)successBlcok{
+    
+    AVAsset *videoAsset = [[AVURLAsset alloc] initWithURL:videoUrl options:nil];
+    AVAssetTrack *assetVideoTrack = nil;
+    AVAssetTrack *assetAudioTrack = nil;
+    
+    // Check if the asset contains video and audio tracks
+    if ([[videoAsset tracksWithMediaType:AVMediaTypeVideo] count] != 0) {
+        assetVideoTrack = [videoAsset tracksWithMediaType:AVMediaTypeVideo][0];
+    }
+    if ([[videoAsset tracksWithMediaType:AVMediaTypeAudio] count] != 0) {
+        assetAudioTrack = [videoAsset tracksWithMediaType:AVMediaTypeAudio][0];
+    }
+    
+    CMTime start = CMTimeMakeWithSeconds(startTime, videoAsset.duration.timescale);
+    CMTime duration = CMTimeMakeWithSeconds(stopTime - startTime, videoAsset.duration.timescale);
+    CMTimeRange range = CMTimeRangeMake(start, duration);
+    
+    CMTime insertionPoint = kCMTimeZero;
+    NSError *error = nil;
+    
+    CMTime assetDuration = videoAsset.duration;
+    
+    if (!self.composition) {
+        self.composition = [AVMutableComposition composition];
+        if(assetVideoTrack != nil) {
+            AVMutableCompositionTrack *compositionVideoTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+            [compositionVideoTrack insertTimeRange:CMTimeRangeMake(insertionPoint, assetDuration) ofTrack:assetVideoTrack atTime:insertionPoint error:&error];
+//            [compositionVideoTrack removeTimeRange:range];
+        }
+        if(assetAudioTrack != nil) {
+            AVMutableCompositionTrack *compositionAudioTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+            [compositionAudioTrack insertTimeRange:CMTimeRangeMake(insertionPoint, assetDuration) ofTrack:assetAudioTrack atTime:insertionPoint error:&error];
+//            [compositionAudioTrack removeTimeRange:range];
+        }
+    }
+    [self.composition removeTimeRange:range];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // 调用播放方法
+        AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:self.composition];
+        
+        successBlcok(playerItem);
+    });
+    
+//    AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:self.composition];
+//    playerItem.videoComposition = self.videoComposition;
+}
+
+- (void)clipVideo:(NSURL *)videoUrl atStartTime:(CGFloat)startTime stopTime:(CGFloat)stopTime success:(SuccessBlcok)successBlcok{
+    
+    AVAsset *anAsset = [[AVURLAsset alloc] initWithURL:videoUrl options:nil];
+    NSArray *compatiblePresets = [AVAssetExportSession exportPresetsCompatibleWithAsset:anAsset];
+    if ([compatiblePresets containsObject:AVAssetExportPresetMediumQuality]) {
+        
+        AVAssetExportSession *assetExport = [[AVAssetExportSession alloc]
+                              initWithAsset:anAsset presetName:AVAssetExportPresetPassthrough];
+        // Implementation continues.
+        NSString *outPutFilePath = [[self compositionPath] stringByAppendingPathComponent:_compositionName];
+        //存在该文件
+        if ([MTFileManager fileExistsAtPath:outPutFilePath]) {
+            [MTFileManager clearCachesWithFilePath:outPutFilePath];
+        }
+        
+        NSURL *furl = [NSURL fileURLWithPath:outPutFilePath];
+        
+        assetExport.outputURL = furl;
+        assetExport.outputFileType = AVFileTypeMPEG4;
+        
+        CMTime start = CMTimeMakeWithSeconds(startTime, anAsset.duration.timescale);
+        CMTime duration = CMTimeMakeWithSeconds(stopTime - startTime, anAsset.duration.timescale);
+        CMTimeRange range = CMTimeRangeMake(start, duration);
+        assetExport.timeRange = range;
+        
+        [assetExport exportAsynchronouslyWithCompletionHandler:^{
+            // 回到主线程
+            switch (assetExport.status) {
+                case AVAssetExportSessionStatusUnknown:
+                    NSLog(@"exporter Unknow");
+                    break;
+                case AVAssetExportSessionStatusCancelled:
+                    NSLog(@"exporter Canceled");
+                    break;
+                case AVAssetExportSessionStatusFailed:
+                    NSLog(@"%@", [NSString stringWithFormat:@"exporter Failed%@",assetExport.error.description]);
+                    break;
+                case AVAssetExportSessionStatusWaiting:
+                    NSLog(@"exporter Waiting");
+                    break;
+                case AVAssetExportSessionStatusExporting:
+                    NSLog(@"exporter Exporting");
+                    break;
+                case AVAssetExportSessionStatusCompleted:
+                    NSLog(@"exporter Completed");
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        // 调用播放方法
+                        successBlcok([NSURL fileURLWithPath:outPutFilePath]);
+                    });
+                    break;
+            }
+        }];
+    }
 }
 
 @end
