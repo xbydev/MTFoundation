@@ -9,6 +9,7 @@
 #import <CoreMedia/CMTimeRange.h>
 #import <AVFoundation/AVFoundation.h>
 #import "MTVideoConstant.h"
+#import "RecordAudioInfo.h"
 
 @interface VideoAudioComposition : NSObject
 
@@ -84,6 +85,12 @@
 - (void)roateVideo:(NSURL *)videoUrl withDegree:(NSInteger)degree success:(SuccessBlcok)successBlcok;
 
 - (void)replaceAudioInVideo:(NSURL *)videoUrl withAudio:(NSURL *)audioUrl atRange:(CMTimeRange)timeRange atVolume:(CGFloat)volume success:(SuccessBlcok)successBlcok;
+
+- (void)replaceAudioInVideo:(NSURL *)videoUrl withAudio:(NSURL *)audioUrl atVideoPosition:(CGFloat)videoPosition atVolume:(CGFloat)volume success:(SuccessBlcok)successBlcok;
+
+- (void)preReplaceAudioInVideo:(NSURL *)videoUrl withAudio:(NSURL *)audioUrl atVideoPosition:(CGFloat)videoPosition atVolume:(CGFloat)volume success:(PreSuccessBlcok)successBlcok;
+
+- (void)preReplaceAudioInVideo:(NSURL *)videoUrl withAudioInfos:(NSArray *)audioInfoArr atVolume:(CGFloat)volume success:(PreSuccessBlcok)successBlcok;
 
 - (void)preClipVideo:(NSURL *)videoUrl atStartTime:(CGFloat)startTime stopTime:(CGFloat)stopTime success:(PreSuccessBlcok)successBlcok;
 
