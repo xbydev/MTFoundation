@@ -10,6 +10,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "MTVideoConstant.h"
 #import "RecordAudioInfo.h"
+#import "StickerInfo.h"
 
 @interface VideoAudioComposition : NSObject
 
@@ -96,4 +97,7 @@
 
 - (void)clipVideo:(NSURL *)videoUrl atStartTime:(CGFloat)startTime stopTime:(CGFloat)stopTime success:(SuccessBlcok)successBlcok;
 
+- (void)preAddSticker:(NSArray *)stickerInfoArr toVideo:(NSURL *)videoUrl success:(PreSuccessBlcok)successBlcok;
+
+- (void)addSticker:(NSArray *)stickerInfoArr toVideo:(NSURL *)videoUrl success:(PreSuccessBlcok)successBlcok;
 @end

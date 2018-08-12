@@ -836,4 +836,114 @@ static NSString *const kCompositionPath = @"GLComposition";
     }
 }
 
+- (void)preAddSticker:(NSArray *)stickerInfoArr toVideo:(NSURL *)videoUrl success:(PreSuccessBlcok)successBlcok{
+    
+    AVURLAsset *videoAsset = [[AVURLAsset alloc] initWithURL:videoUrl options:nil];
+    
+    if (!self.composition) {
+        self.composition = [AVMutableComposition composition];
+    }
+    
+    //合成轨道
+    AVMutableCompositionTrack *videoCompositionTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+    
+    AVMutableCompositionTrack *audioCompositionTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+    //视频采集
+    AVAssetTrack *videoAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+    
+    AVAssetTrack *audioAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0];
+    //加入合成轨道
+    [videoCompositionTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, videoAssetTrack.timeRange.duration) ofTrack:videoAssetTrack atTime:kCMTimeZero error:nil];
+    
+    [audioCompositionTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, audioAssetTrack.timeRange.duration) ofTrack:audioAssetTrack atTime:kCMTimeZero error:nil];
+    
+    AVMutableVideoComposition *mutableVideoComposition = [AVMutableVideoComposition videoComposition];
+    
+    // The rotate transform is set on a layer instruction
+    AVMutableVideoCompositionInstruction *videoCompostionInstruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
+    videoCompostionInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, [self.composition duration]);
+    
+    AVMutableVideoCompositionLayerInstruction *layerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:videoCompositionTrack];
+    
+    videoCompostionInstruction.layerInstructions = @[layerInstruction];
+    mutableVideoComposition.instructions = @[videoCompostionInstruction];
+    
+    //必须设置 下面的尺寸和时间
+    mutableVideoComposition.renderSize = videoAssetTrack.naturalSize;
+    mutableVideoComposition.frameDuration = CMTimeMake(1, 30);
+    mutableVideoComposition.instructions = @[videoCompostionInstruction];
+    
+    [self addStickerLayerWithAVMutableVideoComposition:mutableVideoComposition withStickerInfo:stickerInfoArr];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // 调用播放方法
+        AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:self.composition];
+//        playerItem.videoComposition = mutableVideoComposition;
+        
+        successBlcok(playerItem);
+    });
+    
+}
+
+- (void)addSticker:(NSArray *)stickerInfoArr toVideo:(NSURL *)videoUrl success:(PreSuccessBlcok)successBlcok{
+    
+}
+
+- (void)addStickerLayerWithAVMutableVideoComposition:(AVMutableVideoComposition*)mutableVideoComposition withStickerInfo:(NSArray*)stickerInfos
+{
+    CALayer *parentLayer = [CALayer layer];
+    CALayer *videoLayer = [CALayer layer];
+    
+    parentLayer.frame = CGRectMake(0, 0, mutableVideoComposition.renderSize.width, mutableVideoComposition.renderSize.height);
+    videoLayer.frame = CGRectMake(0, 0, mutableVideoComposition.renderSize.width, mutableVideoComposition.renderSize.height);
+    
+    CGSize videoSize = mutableVideoComposition.renderSize;
+    
+    [parentLayer addSublayer:videoLayer];
+    
+    if (stickerInfos.count > 0) {
+        for (StickerInfo *info in stickerInfos) {
+            if (info.stickerImg) {
+                CALayer *overlayLayer = [CALayer layer];
+                [overlayLayer setContents:(id)[info.stickerImg CGImage]];
+                
+                if (videoSize.width > 0 && info.parentSize.width > 0) {
+                    CGFloat centerX = videoSize.width * info.centerPoint.x / info.parentSize.width;
+                    CGFloat centerY = videoSize.height * info.centerPoint.y / info.parentSize.height;
+                    CGFloat width = videoSize.width * info.stickerWidth / info.parentSize.width;
+                    overlayLayer.frame = CGRectMake(centerX - width/2, centerY - width/2, width, width);
+                }else{
+                    overlayLayer.frame = CGRectZero;
+                }
+                [overlayLayer setMasksToBounds:YES];
+                
+                CABasicAnimation *animation =
+                [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
+                animation.duration = info.duration;
+                animation.repeatCount = 0;
+                //    animation.autoreverses=YES;
+                // rotate from 0 to 360
+                animation.fromValue=[NSNumber numberWithFloat:info.rotate];
+                animation.toValue=[NSNumber numberWithFloat:info.rotate];
+                animation.beginTime = info.startTime;
+                animation.fillMode = kCAFillModeForwards;
+                [overlayLayer addAnimation:animation forKey:@"rotation"];
+                
+                animation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+                [animation setDuration:0];
+                [animation setFromValue:[NSNumber numberWithFloat:1.0]];
+                [animation setToValue:[NSNumber numberWithFloat:0.0]];
+                [animation setBeginTime:info.startTime + info.duration];
+                [animation setRemovedOnCompletion:NO];
+                [animation setFillMode:kCAFillModeForwards];
+                [overlayLayer addAnimation:animation forKey:@"animateOpacity"];
+                
+                [parentLayer addSublayer:overlayLayer];
+            }
+        }
+    }
+    
+    mutableVideoComposition.animationTool = [AVVideoCompositionCoreAnimationTool videoCompositionCoreAnimationToolWithPostProcessingAsVideoLayer:videoLayer inLayer:parentLayer];
+}
+
 @end
