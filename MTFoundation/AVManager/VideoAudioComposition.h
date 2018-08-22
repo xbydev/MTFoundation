@@ -100,4 +100,6 @@
 - (void)preAddSticker:(NSArray *)stickerInfoArr toVideo:(NSURL *)videoUrl success:(PreSuccessBlcok)successBlcok;
 
 - (void)addSticker:(NSArray *)stickerInfoArr toVideo:(NSURL *)videoUrl success:(PreSuccessBlcok)successBlcok;
+
+- (void)preCompositeAssets:(NSArray *)selectAssets success:(PreSuccessBlcok)successBlcok;
 @end

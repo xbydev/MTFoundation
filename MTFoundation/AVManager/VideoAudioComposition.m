@@ -7,6 +7,7 @@
 
 #import "VideoAudioComposition.h"
 #import "MTFileManager.h"
+#import "SelectAssetInfo.h"
 
 #define degreesToRadians( degrees ) ( ( degrees ) / 180.0 * M_PI )
 
@@ -944,6 +945,21 @@ static NSString *const kCompositionPath = @"GLComposition";
     }
     
     mutableVideoComposition.animationTool = [AVVideoCompositionCoreAnimationTool videoCompositionCoreAnimationToolWithPostProcessingAsVideoLayer:videoLayer inLayer:parentLayer];
+}
+
+- (void)preCompositeAssets:(NSArray *)selectAssets success:(PreSuccessBlcok)successBlcok{
+    for (NSObject*asset in selectAssets) {
+        if ([asset isKindOfClass:[SelectAssetInfo class]]) {
+            return;
+        }
+    }
+    
+    for (SelectAssetInfo* selectInfo in selectAssets) {
+        if (selectInfo.imageVideoDuration > 0) { //表示是图片
+            
+        }
+        
+    }
 }
 
 @end
