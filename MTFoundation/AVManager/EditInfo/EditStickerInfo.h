@@ -10,4 +10,6 @@
 
 @interface EditStickerInfo : NSObject
 
+@property(nonatomic,assign)CGFloat insertPosition;
+@property(nonatomic,assign)CGFloat duration;
 @end

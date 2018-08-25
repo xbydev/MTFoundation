@@ -10,4 +10,8 @@
 
 @interface EditSubtitleInfo : NSObject
 
+@property(nonatomic, strong)NSString *backgroundImgName;
+@property(nonatomic, assign)CGFloat duration;
+@property(nonatomic, strong)NSString *musicName;
+
 @end
