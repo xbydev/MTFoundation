@@ -18,6 +18,7 @@
 @interface SelectAssetInfo : NSObject
 
 @property(nonatomic, strong)PHAsset *asset;
+@property(nonatomic, strong)NSString *type; //取值为image 和 video
 @property(nonatomic, strong)NSString *fileName;
 @property(nonatomic, strong)NSString *filePath;
 @property(nonatomic, strong)NSString *latestVideoPath;

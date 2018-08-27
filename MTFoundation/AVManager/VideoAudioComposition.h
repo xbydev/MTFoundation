@@ -81,6 +81,8 @@
  */
 - (void)compositionVideos:(NSArray <NSURL*>*)videos timeRanges:(NSArray<NSValue *> *)timeRanges success:(SuccessBlcok)successBlcok;
 
+- (void)preCompositionVideos:(NSArray <NSURL*>*)videos success:(PreSuccessBlcok)successBlcok;
+
 - (void)speedVideo:(NSURL *)videoUrl withSpeed:(CGFloat)speed success:(SuccessBlcok)successBlcok;
 
 - (void)roateVideo:(NSURL *)videoUrl withDegree:(NSInteger)degree success:(SuccessBlcok)successBlcok;
@@ -101,5 +103,4 @@
 
 - (void)addSticker:(NSArray *)stickerInfoArr toVideo:(NSURL *)videoUrl success:(PreSuccessBlcok)successBlcok;
 
-- (void)preCompositeAssets:(NSArray *)selectAssets success:(PreSuccessBlcok)successBlcok;
 @end

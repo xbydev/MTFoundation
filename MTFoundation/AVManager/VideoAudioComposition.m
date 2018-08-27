@@ -230,7 +230,6 @@ static NSString *const kCompositionPath = @"GLComposition";
     [self compositionMedia:audios timeRanges:timeRanges type:1 success:successBlcok];
 }
 
-
 #pragma mark == private method
 - (void)compositionMedia:(NSArray<NSURL *> *)media timeRanges:(NSArray<NSValue *> *)timeRanges type:(NSInteger)type success:(SuccessBlcok)successBlcok
 {
@@ -947,19 +946,48 @@ static NSString *const kCompositionPath = @"GLComposition";
     mutableVideoComposition.animationTool = [AVVideoCompositionCoreAnimationTool videoCompositionCoreAnimationToolWithPostProcessingAsVideoLayer:videoLayer inLayer:parentLayer];
 }
 
-- (void)preCompositeAssets:(NSArray *)selectAssets success:(PreSuccessBlcok)successBlcok{
-    for (NSObject*asset in selectAssets) {
-        if ([asset isKindOfClass:[SelectAssetInfo class]]) {
-            return;
-        }
+- (void)preCompositionVideos:(NSArray <NSURL*>*)videos success:(PreSuccessBlcok)successBlcok{
+    NSCAssert(_compositionName.length > 0, @"请输入转换后的名字");
+    NSString *outPutFilePath = [[self compositionPath] stringByAppendingPathComponent:_compositionName];
+    
+    //存在该文件
+    if ([MTFileManager fileExistsAtPath:outPutFilePath]) {
+        [MTFileManager clearCachesWithFilePath:outPutFilePath];
     }
     
-    for (SelectAssetInfo* selectInfo in selectAssets) {
-        if (selectInfo.imageVideoDuration > 0) { //表示是图片
-            
-        }
+    // 创建可变的音视频组合
+    AVMutableComposition *composition = [AVMutableComposition composition];
+    // 视频通道
+    AVMutableCompositionTrack *videoTrack = [composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+    // 音频通道
+    AVMutableCompositionTrack *audioTrack = [composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+    
+    CMTime atTime = kCMTimeZero;
+    
+    for (int i = 0;i < videos.count;i ++) {
+        NSURL *url = videos[i];
+        CMTimeRange timeRange = CMTimeRangeMake(kCMTimeZero, kCMTimeZero);
+        // 视频采集
+        AVURLAsset *videoAsset = [[AVURLAsset alloc] initWithURL:url options:nil];
+        timeRange = [self fitTimeRange:timeRange avUrlAsset:videoAsset];
         
+        // 视频采集通道
+        AVAssetTrack *videoAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeVideo] firstObject];
+        // 把采集轨道数据加入到可变轨道之中
+        [videoTrack insertTimeRange:timeRange ofTrack:videoAssetTrack atTime:atTime error:nil];
+        
+        // 音频采集通道
+        AVAssetTrack *audioAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeAudio] firstObject];
+        // 加入合成轨道之中
+        [audioTrack insertTimeRange:timeRange ofTrack:audioAssetTrack atTime:atTime error:nil];
+        
+        atTime = CMTimeAdd(atTime, timeRange.duration);
     }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // 调用播放方法
+        AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:composition];
+        successBlcok(playerItem);
+    });
 }
 
 @end
