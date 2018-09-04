@@ -956,36 +956,78 @@ static NSString *const kCompositionPath = @"GLComposition";
     }
     
     // 创建可变的音视频组合
-    AVMutableComposition *composition = [AVMutableComposition composition];
+    AVMutableComposition *mixComposition = [AVMutableComposition composition];
     // 视频通道
-    AVMutableCompositionTrack *videoTrack = [composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+//    AVMutableCompositionTrack *videoTrack = [mixComposition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
     // 音频通道
-    AVMutableCompositionTrack *audioTrack = [composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+    AVMutableCompositionTrack *audioTrack = [mixComposition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
     
-    CMTime atTime = kCMTimeZero;
+//    AVMutableVideoComposition* videoComposition = [AVMutableVideoComposition videoComposition];
+//
+//    CMTime atTime = kCMTimeZero;
     
-    for (int i = 0;i < videos.count;i ++) {
+    AVMutableVideoCompositionInstruction * mainInstruction =
+    [AVMutableVideoCompositionInstruction videoCompositionInstruction];
+    
+    NSMutableArray *arrayInstruction = [[NSMutableArray alloc] init];
+    
+    CMTime duration = kCMTimeZero;
+    for(int i=0;i< videos.count;i++)
+    {
         NSURL *url = videos[i];
-        CMTimeRange timeRange = CMTimeRangeMake(kCMTimeZero, kCMTimeZero);
         // 视频采集
-        AVURLAsset *videoAsset = [[AVURLAsset alloc] initWithURL:url options:nil];
-        timeRange = [self fitTimeRange:timeRange avUrlAsset:videoAsset];
+        AVURLAsset *currentAsset = [[AVURLAsset alloc] initWithURL:url options:nil];
         
-        // 视频采集通道
-        AVAssetTrack *videoAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeVideo] firstObject];
-        // 把采集轨道数据加入到可变轨道之中
-        [videoTrack insertTimeRange:timeRange ofTrack:videoAssetTrack atTime:atTime error:nil];
+        AVMutableCompositionTrack *currentTrack = [mixComposition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+        [currentTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, currentAsset.duration) ofTrack:[[currentAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0] atTime:duration error:nil];
         
-        // 音频采集通道
-        AVAssetTrack *audioAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeAudio] firstObject];
-        // 加入合成轨道之中
-        [audioTrack insertTimeRange:timeRange ofTrack:audioAssetTrack atTime:atTime error:nil];
+        if ([[currentAsset tracksWithMediaType:AVMediaTypeAudio] count] != 0) {
+            [audioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, currentAsset.duration) ofTrack:[[currentAsset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0] atTime:duration error:nil];
+        }else{
+            [audioTrack insertEmptyTimeRange:CMTimeRangeMake(duration, currentAsset.duration)];
+        }
         
-        atTime = CMTimeAdd(atTime, timeRange.duration);
+        AVMutableVideoCompositionLayerInstruction *currentAssetLayerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:currentTrack];
+        
+        AVAssetTrack *currentAssetTrack = [[currentAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+        UIImageOrientation currentAssetOrientation  = UIImageOrientationUp;
+        BOOL  isCurrentAssetPortrait  = NO;
+        CGAffineTransform currentTransform = currentAssetTrack.preferredTransform;
+        
+        if(currentTransform.a == 0 && currentTransform.b == 1.0 && currentTransform.c == -1.0 && currentTransform.d == 0)  {currentAssetOrientation= UIImageOrientationRight; isCurrentAssetPortrait = YES;}
+        if(currentTransform.a == 0 && currentTransform.b == -1.0 && currentTransform.c == 1.0 && currentTransform.d == 0)  {currentAssetOrientation =  UIImageOrientationLeft; isCurrentAssetPortrait = YES;}
+        if(currentTransform.a == 1.0 && currentTransform.b == 0 && currentTransform.c == 0 && currentTransform.d == 1.0)   {currentAssetOrientation =  UIImageOrientationUp;}
+        if(currentTransform.a == -1.0 && currentTransform.b == 0 && currentTransform.c == 0 && currentTransform.d == -1.0) {currentAssetOrientation = UIImageOrientationDown;}
+        
+        CGFloat FirstAssetScaleToFitRatio = 640.0/640.0;
+        if(isCurrentAssetPortrait){
+            FirstAssetScaleToFitRatio = 640.0/640.0;
+            CGAffineTransform FirstAssetScaleFactor = CGAffineTransformMakeScale(FirstAssetScaleToFitRatio,FirstAssetScaleToFitRatio);
+            [currentAssetLayerInstruction setTransform:CGAffineTransformConcat(currentAssetTrack.preferredTransform, FirstAssetScaleFactor) atTime:duration];
+        }else{
+            CGAffineTransform FirstAssetScaleFactor = CGAffineTransformMakeScale(FirstAssetScaleToFitRatio,FirstAssetScaleToFitRatio);
+            [currentAssetLayerInstruction setTransform:CGAffineTransformConcat(CGAffineTransformConcat(currentAssetTrack.preferredTransform, FirstAssetScaleFactor),CGAffineTransformMakeTranslation(0, 0)) atTime:duration];
+        }
+        
+        duration = CMTimeAdd(duration, currentAsset.duration);
+        
+        [currentAssetLayerInstruction setOpacity:0.0 atTime:duration];
+        [arrayInstruction addObject:currentAssetLayerInstruction];
+        
     }
+    
+    mainInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, duration);
+    mainInstruction.layerInstructions = arrayInstruction;
+    
+    AVMutableVideoComposition *mainCompositionInst = [AVMutableVideoComposition videoComposition];
+    mainCompositionInst.instructions = [NSArray arrayWithObject:mainInstruction];
+    mainCompositionInst.frameDuration = CMTimeMake(1, 30);
+    mainCompositionInst.renderSize = CGSizeMake(640.0, 640.0);
+
     dispatch_async(dispatch_get_main_queue(), ^{
         // 调用播放方法
-        AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:composition];
+        AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:mixComposition];
+        playerItem.videoComposition = mainCompositionInst;
         successBlcok(playerItem);
     });
 }

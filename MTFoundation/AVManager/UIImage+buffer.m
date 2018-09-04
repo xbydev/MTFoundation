@@ -48,7 +48,11 @@
     //使用CGContextDrawImage绘制图片  这里设置不正确的话 会导致视频颠倒
     // 当通过CGContextDrawImage绘制图片到一个context中时，如果传入的是UIImage的CGImageRef，因为UIKit和CG坐标系y轴相反，所以图片绘制将会上下颠倒
 
-    CGContextDrawImage(context,CGRectMake(0,0,CGImageGetWidth(self.CGImage),CGImageGetHeight(self.CGImage)), self.CGImage);
+    CGRect rect = CGRectMake(0,0,size.width,size.height);
+    NSLog(@"the rect is %@",NSStringFromCGRect(rect));
+    CGContextDrawImage(context,rect, self.CGImage);
+
+//   CGContextDrawImage(context,CGRectMake(0,0,CGImageGetWidth(self.CGImage),CGImageGetHeight(self.CGImage)), self.CGImage);
     // 释放色彩空间
     CGColorSpaceRelease(rgbColorSpace);
     // 释放context
