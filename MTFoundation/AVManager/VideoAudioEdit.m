@@ -163,10 +163,8 @@ static NSString *const kVideoPath = @"MTVideo";
     //视频尺寸
     CGSize size = videoSize;
     if (CGSizeEqualToSize(size, CGSizeZero)) {
-        size = CGSizeMake(480, 480);
+        size = CGSizeMake(640, 480);
     }
-    
-    size = CGSizeMake(480, 480);
     //meaning that it must contain AVVideoCodecKey, AVVideoWidthKey, and AVVideoHeightKey.
     //视频信息设置
     //    NSDictionary *outPutSettingDic = [NSDictionary dictionaryWithObjectsAndKeys:

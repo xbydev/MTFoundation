@@ -45,12 +45,57 @@
     CGContextRef context =CGBitmapContextCreate(pxdata,size.width,size.height,8,4*size.width,rgbColorSpace,kCGImageAlphaPremultipliedFirst);
     NSParameterAssert(context);
     
+    //我们默认视频像素为： 640 * 480 (宽高比）
+    CGSize targetSize = CGSizeMake(640, 480);
+    CGFloat width = size.width;
+    CGFloat height = size.height;
+    CGFloat targetWidth = targetSize.width;
+    CGFloat targetHeight = targetSize.height;
+    //    CGFloat scaleFactor = 0.0;
+    CGFloat scaledWidth = targetWidth;
+    CGFloat scaledHeight = targetHeight;
+    CGPoint thumbnailPoint = CGPointMake(0.0, 0.0);
+    
+    if(CGSizeEqualToSize(targetSize, size) == NO){
+        
+        CGFloat widthFactor = width/targetWidth;
+        CGFloat heightFactor = height/targetHeight;
+        
+        if(widthFactor > heightFactor){
+            scaledWidth = targetWidth;
+            scaledHeight = (targetWidth * height)/ width;
+        }
+        else{
+            scaledHeight = targetHeight;
+            scaledWidth = (targetHeight * width)/ height;
+        }
+        
+        if(widthFactor > heightFactor){
+            thumbnailPoint.y = (targetHeight - scaledHeight) * 0.5;
+        }else if(widthFactor < heightFactor){
+            thumbnailPoint.x = (targetWidth - scaledWidth) * 0.5;
+        }
+    }
+
+//
+//    if (size.width > 0) {
+//        if (size.height/(size.width * 1.0) >= 0.75) {
+//            tempSize.width = size.width;
+//            tempSize.height = (size.width * 4)/3.0;
+//        }else{
+//            tempSize.height = size.height;
+//            tempSize.width = (size.height * 3)/4.0;
+//        }
+//    }
     //使用CGContextDrawImage绘制图片  这里设置不正确的话 会导致视频颠倒
     // 当通过CGContextDrawImage绘制图片到一个context中时，如果传入的是UIImage的CGImageRef，因为UIKit和CG坐标系y轴相反，所以图片绘制将会上下颠倒
-
-    CGRect rect = CGRectMake(0,0,size.width,size.height);
-    NSLog(@"the rect is %@",NSStringFromCGRect(rect));
-    CGContextDrawImage(context,rect, self.CGImage);
+    
+    CGRect thumbnailRect = CGRectZero;
+    thumbnailRect.origin = thumbnailPoint;
+    thumbnailRect.size.width = scaledWidth;
+    thumbnailRect.size.height = scaledHeight;
+    
+    CGContextDrawImage(context,thumbnailRect, self.CGImage);
 
 //   CGContextDrawImage(context,CGRectMake(0,0,CGImageGetWidth(self.CGImage),CGImageGetHeight(self.CGImage)), self.CGImage);
     // 释放色彩空间
