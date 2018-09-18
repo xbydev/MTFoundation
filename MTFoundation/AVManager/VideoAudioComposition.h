@@ -83,6 +83,8 @@
 
 - (void)preCompositionVideos:(NSArray <NSURL*>*)videos success:(PreSuccessBlcok)successBlcok;
 
+- (void)preCompositionVideos:(NSArray <NSURL*>*)videos successWithComposition:(PreSuccessDetailBlcok)successBlcok;
+
 - (void)speedVideo:(NSURL *)videoUrl withSpeed:(CGFloat)speed success:(SuccessBlcok)successBlcok;
 
 - (void)roateVideo:(NSURL *)videoUrl withDegree:(NSInteger)degree success:(SuccessBlcok)successBlcok;

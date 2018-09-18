@@ -28,9 +28,15 @@ typedef void(^SuccessBlcok)(NSURL *fileUrl);
 
 /**
  预处理成功block
- @param asset 预处理成功
+ @param playItem 预处理成功
  */
 typedef void(^PreSuccessBlcok)(AVPlayerItem *playItem);
+
+
+/**
+ 预处理成功block,含有composition 和 videoComposition 信息
+ */
+typedef void(^PreSuccessDetailBlcok)(AVPlayerItem *playItem,AVMutableComposition *composition,AVMutableVideoComposition *videoComposition);
 
 
 /**
