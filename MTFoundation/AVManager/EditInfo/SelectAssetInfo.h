@@ -17,7 +17,7 @@
 
 @interface SelectAssetInfo : NSObject
 
-@property(nonatomic, strong)PHAsset *asset;
+@property(nonatomic, strong)PHAsset *asset; //由于有本地录制的视频，改字段有可能为空
 @property(nonatomic, strong)NSString *type; //取值为image 和 video
 @property(nonatomic, strong)NSString *fileName;
 @property(nonatomic, strong)NSString *filePath;
