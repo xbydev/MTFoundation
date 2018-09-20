@@ -71,34 +71,56 @@ static NSString *const kCompositionPath = @"GLComposition";
 
 - (void)speedVideo:(NSURL *)videoUrl withSpeed:(CGFloat)speed success:(SuccessBlcok)successBlcok{
     CGFloat fastRate = speed; //比如3.0倍加速
-    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:videoUrl options:nil];
-    CGFloat timeScale = asset.duration.timescale;
+    
+    AVURLAsset *videoAsset = [[AVURLAsset alloc] initWithURL:videoUrl options:nil];
     
     AVMutableComposition *composition = [AVMutableComposition composition];
-    AVMutableCompositionTrack *videoTrack = [composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
-    // 音频通道
-    AVMutableCompositionTrack *audioTrack = [composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
     
-    // 视频采集
-    AVURLAsset *videoAsset = [[AVURLAsset alloc] initWithURL:videoUrl options:nil];
-    // 音频采集
-    AVURLAsset *audioAsset = [[AVURLAsset alloc] initWithURL:videoUrl options:nil];
+    CGFloat timeScale = videoAsset.duration.timescale;
     
     // 这里的startTime和endTime都是秒，需要乘以timeScale来组成CMTime
     CMTime startTime = CMTimeMake(0 * timeScale, timeScale);
-    CMTime duration = CMTimeMake(asset.duration.value * timeScale, timeScale);
+    CMTime duration = CMTimeMake(videoAsset.duration.value * timeScale, timeScale);
     CMTimeRange fastRange = CMTimeRangeMake(startTime, duration);
     CMTime scaledDuration = CMTimeMake(duration.value / fastRate, timeScale);
     
-    // 视频采集通道
-    AVAssetTrack *videoAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeVideo] firstObject];
-    // 把采集轨道数据加入到可变轨道之中
-    [videoTrack insertTimeRange:fastRange ofTrack:videoAssetTrack atTime:kCMTimeZero error:nil];
+    AVAssetTrack *assetVideoTrack = nil;
+    AVAssetTrack *assetAudioTrack = nil;
+    // Check if the asset contains video and audio tracks
+    if ([[videoAsset tracksWithMediaType:AVMediaTypeVideo] count] != 0) {
+        assetVideoTrack = [videoAsset tracksWithMediaType:AVMediaTypeVideo][0];
+        
+        AVMutableCompositionTrack *videoTrack = [composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+        
+        if (assetVideoTrack) {
+            // 把采集轨道数据加入到可变轨道之中
+            [videoTrack insertTimeRange:fastRange ofTrack:assetVideoTrack atTime:kCMTimeZero error:nil];
+        }
+    }
     
-    // 音频采集通道
-    AVAssetTrack *audioAssetTrack = [[audioAsset tracksWithMediaType:AVMediaTypeAudio] firstObject];
-    // 加入合成轨道之中
-    [audioTrack insertTimeRange:fastRange ofTrack:audioAssetTrack atTime:kCMTimeZero error:nil];
+    if ([[videoAsset tracksWithMediaType:AVMediaTypeAudio] count] != 0) {
+        assetAudioTrack = [videoAsset tracksWithMediaType:AVMediaTypeAudio][0];
+        
+        // 音频通道
+        AVMutableCompositionTrack *audioTrack = [composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+        
+        if (assetAudioTrack) {
+            // 加入合成轨道之中
+            [audioTrack insertTimeRange:fastRange ofTrack:assetAudioTrack atTime:kCMTimeZero error:nil];
+        }
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     // 处理视频轨
     [[composition tracksWithMediaType:AVMediaTypeVideo] enumerateObjectsUsingBlock:^(AVMutableCompositionTrack * _Nonnull videoTrack, NSUInteger idx, BOOL * _Nonnull stop) {
