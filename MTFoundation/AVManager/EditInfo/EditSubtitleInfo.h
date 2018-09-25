@@ -13,5 +13,6 @@
 @property(nonatomic, strong)NSString *backgroundImgName;
 @property(nonatomic, assign)CGFloat duration;
 @property(nonatomic, strong)NSString *musicName;
+@property(nonatomic, strong)NSString *subtileVideoFile;
 
 @end

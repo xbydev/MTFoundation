@@ -781,6 +781,7 @@ static NSString *const kCompositionPath = @"GLComposition";
     
     if(assetVideoTrack != nil) {
         AVMutableCompositionTrack *compositionVideoTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+        [compositionVideoTrack setPreferredTransform:assetVideoTrack.preferredTransform];
         [compositionVideoTrack insertTimeRange:CMTimeRangeMake(insertionPoint, assetDuration) ofTrack:assetVideoTrack atTime:insertionPoint error:&error];
         //            [compositionVideoTrack removeTimeRange:range];
     }
