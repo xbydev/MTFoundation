@@ -905,8 +905,57 @@ static NSString *const kCompositionPath = @"GLComposition";
         
         successBlcok(playerItem);
     });
-    
 }
+
+- (void)preAddSticker:(NSArray *)stickerInfoArr toPlayerItem:(AVPlayerItem *)playerItem success:(PreSuccessBlcok)successBlcok{
+//    AVURLAsset *videoAsset = [[AVURLAsset alloc] initWithURL:videoUrl options:nil];
+    AVAsset *videoAsset = playerItem.asset;
+    
+    if (!self.composition) {
+        self.composition = [AVMutableComposition composition];
+    }
+    
+    //合成轨道
+    AVMutableCompositionTrack *videoCompositionTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+    
+    AVMutableCompositionTrack *audioCompositionTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+    //视频采集
+    AVAssetTrack *videoAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+    
+    AVAssetTrack *audioAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0];
+    //加入合成轨道
+    [videoCompositionTrack setPreferredTransform:videoAssetTrack.preferredTransform];
+    [videoCompositionTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, videoAssetTrack.timeRange.duration) ofTrack:videoAssetTrack atTime:kCMTimeZero error:nil];
+    
+    [audioCompositionTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, audioAssetTrack.timeRange.duration) ofTrack:audioAssetTrack atTime:kCMTimeZero error:nil];
+    
+    AVMutableVideoComposition *mutableVideoComposition = [AVMutableVideoComposition videoComposition];
+    
+    // The rotate transform is set on a layer instruction
+    AVMutableVideoCompositionInstruction *videoCompostionInstruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
+    videoCompostionInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, [self.composition duration]);
+    
+    AVMutableVideoCompositionLayerInstruction *layerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:videoCompositionTrack];
+    
+    videoCompostionInstruction.layerInstructions = @[layerInstruction];
+    mutableVideoComposition.instructions = @[videoCompostionInstruction];
+    
+    //必须设置 下面的尺寸和时间
+    mutableVideoComposition.renderSize = videoAssetTrack.naturalSize;
+    mutableVideoComposition.frameDuration = CMTimeMake(1, 30);
+    mutableVideoComposition.instructions = @[videoCompostionInstruction];
+    
+    [self addStickerLayerWithAVMutableVideoComposition:mutableVideoComposition withStickerInfo:stickerInfoArr];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // 调用播放方法
+        AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:self.composition];
+        //        playerItem.videoComposition = mutableVideoComposition;
+        
+        successBlcok(playerItem);
+    });
+}
+
 
 - (void)addSticker:(NSArray *)stickerInfoArr toVideo:(NSURL *)videoUrl success:(PreSuccessBlcok)successBlcok{
     
