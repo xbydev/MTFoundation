@@ -956,9 +956,66 @@ static NSString *const kCompositionPath = @"GLComposition";
     });
 }
 
-
 - (void)addSticker:(NSArray *)stickerInfoArr toVideo:(NSURL *)videoUrl success:(PreSuccessBlcok)successBlcok{
     
+}
+
+- (void)addSticker:(NSArray *)stickerInfoArr toPlayerItem:(AVPlayerItem *)playerItem success:(SuccessBlcok)successBlcok{
+    AVAsset *videoAsset = playerItem.asset;
+    
+    if (!self.composition) {
+        self.composition = [AVMutableComposition composition];
+    }
+    
+    //合成轨道
+    AVMutableCompositionTrack *videoCompositionTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+    
+    AVMutableCompositionTrack *audioCompositionTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+    
+    AVAssetTrack *videoAssetTrack = nil;
+    AVAssetTrack *audioAssetTrack = nil;
+    
+    // Check if the asset contains video and audio tracks
+    if ([[videoAsset tracksWithMediaType:AVMediaTypeVideo] count] != 0) {
+        videoAssetTrack = [videoAsset tracksWithMediaType:AVMediaTypeVideo][0];
+    }
+    if ([[videoAsset tracksWithMediaType:AVMediaTypeAudio] count] != 0) {
+        audioAssetTrack = [videoAsset tracksWithMediaType:AVMediaTypeAudio][0];
+    }
+    
+    if (videoAssetTrack) {
+        //加入合成轨道
+        [videoCompositionTrack setPreferredTransform:videoAssetTrack.preferredTransform];
+        [videoCompositionTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, videoAssetTrack.timeRange.duration) ofTrack:videoAssetTrack atTime:kCMTimeZero error:nil];
+    }
+
+    if (audioAssetTrack) {
+        [audioCompositionTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, audioAssetTrack.timeRange.duration) ofTrack:audioAssetTrack atTime:kCMTimeZero error:nil];
+    }
+    
+    AVMutableVideoComposition *mutableVideoComposition = [AVMutableVideoComposition videoComposition];
+    
+    // The rotate transform is set on a layer instruction
+    AVMutableVideoCompositionInstruction *videoCompostionInstruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
+    videoCompostionInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, [self.composition duration]);
+    
+    AVMutableVideoCompositionLayerInstruction *layerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:videoCompositionTrack];
+    
+    videoCompostionInstruction.layerInstructions = @[layerInstruction];
+    mutableVideoComposition.instructions = @[videoCompostionInstruction];
+    
+    //必须设置 下面的尺寸和时间
+    mutableVideoComposition.renderSize = videoAssetTrack.naturalSize;
+    mutableVideoComposition.frameDuration = CMTimeMake(1, 30);
+    mutableVideoComposition.instructions = @[videoCompostionInstruction];
+    
+    [self addStickerLayerWithAVMutableVideoComposition:mutableVideoComposition withStickerInfo:stickerInfoArr];
+    
+    NSString *outPutFilePath = [[self compositionPath] stringByAppendingPathComponent:@"sticker.mp4"];
+    //存在该文件
+    if ([MTFileManager fileExistsAtPath:outPutFilePath]) {
+        [MTFileManager clearCachesWithFilePath:outPutFilePath];
+    }
 }
 
 - (void)addStickerLayerWithAVMutableVideoComposition:(AVMutableVideoComposition*)mutableVideoComposition withStickerInfo:(NSArray*)stickerInfos

@@ -107,4 +107,8 @@
 
 - (void)addSticker:(NSArray *)stickerInfoArr toVideo:(NSURL *)videoUrl success:(PreSuccessBlcok)successBlcok;
 
+//- (void)addSticker:(NSArray *)stickerInfoArr toVideo:(NSURL *)videoUrl success:(PreSuccessBlcok)successBlcok;
+
+//- (void)addSticker:(NSArray *)stickerInfoArr toPlayerItem:(AVPlayerItem *)playerItem success:(SuccessBlcok)successBlcok;
+
 @end
