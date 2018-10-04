@@ -11,6 +11,7 @@
 #import "MTVideoConstant.h"
 #import "RecordAudioInfo.h"
 #import "StickerInfo.h"
+#import "VideoEditManager.h"
 
 @interface VideoAudioComposition : NSObject
 
@@ -110,5 +111,9 @@
 //- (void)addSticker:(NSArray *)stickerInfoArr toVideo:(NSURL *)videoUrl success:(PreSuccessBlcok)successBlcok;
 
 //- (void)addSticker:(NSArray *)stickerInfoArr toPlayerItem:(AVPlayerItem *)playerItem success:(SuccessBlcok)successBlcok;
+
+- (void)createVideoFromManager:(VideoEditManager *)manager success:(SuccessBlcok)successBlcok;
+
+- (void)preCreateVideoFromManager:(VideoEditManager *)manager success:(PreSuccessBlcok)successBlcok;
 
 @end
