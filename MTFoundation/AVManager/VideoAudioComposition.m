@@ -143,7 +143,7 @@ static NSString *const kCompositionPath = @"GLComposition";
     [self composition:composition storePath:outPutFilePath success:successBlcok];
 }
 
-- (void)roateVideo:(NSURL *)videoUrl withDegree:(NSInteger)degree success:(SuccessBlcok)successBlcok{
+- (void)roateVideo:(NSURL *)videoUrl withDegree:(NSInteger)degree isFirstRotate:(BOOL)isFirst success:(SuccessBlcok)successBlcok{
     AVMutableVideoCompositionInstruction *instruction = nil;
     AVMutableVideoCompositionLayerInstruction *layerInstruction = nil;
     CGAffineTransform t1;
@@ -175,13 +175,18 @@ static NSString *const kCompositionPath = @"GLComposition";
         [compositionAudioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, [asset duration]) ofTrack:assetAudioTrack atTime:insertionPoint error:&error];
     }
     
-    
      AVMutableVideoComposition *mutableVideoComposition = [AVMutableVideoComposition videoComposition];
 
     if (degree == 90) {
-        t1 = CGAffineTransformMakeTranslation(assetVideoTrack.naturalSize.height,0.0);
-        t2 = CGAffineTransformRotate(t1,M_PI_2);
-        mutableVideoComposition.renderSize = CGSizeMake(assetVideoTrack.naturalSize.height,assetVideoTrack.naturalSize.width);
+        if (isFirst) {
+            t1 = CGAffineTransformMakeTranslation(assetVideoTrack.naturalSize.width, assetVideoTrack.naturalSize.height);
+            t2 = CGAffineTransformRotate(t1,M_PI);
+            mutableVideoComposition.renderSize = CGSizeMake(assetVideoTrack.naturalSize.width,assetVideoTrack.naturalSize.height);
+        }else{
+            t1 = CGAffineTransformMakeTranslation(assetVideoTrack.naturalSize.height,0.0);
+            t2 = CGAffineTransformRotate(t1,M_PI_2);
+            mutableVideoComposition.renderSize = CGSizeMake(assetVideoTrack.naturalSize.height,assetVideoTrack.naturalSize.width);
+        }
     }else if (degree == 180){
         t1 = CGAffineTransformMakeTranslation(assetVideoTrack.naturalSize.width, assetVideoTrack.naturalSize.height);
         t2 = CGAffineTransformRotate(t1,M_PI);
@@ -195,15 +200,7 @@ static NSString *const kCompositionPath = @"GLComposition";
         t2 = CGAffineTransformRotate(t1,M_PI_2*4.0);
         mutableVideoComposition.renderSize = CGSizeMake(assetVideoTrack.naturalSize.width,assetVideoTrack.naturalSize.height);
     }
-    
-    //    t1 = CGAffineTransformMakeTranslation(assetVideoTrack.naturalSize.height, 0.0);
-    //    // Rotate transformation
-    //    t2 = CGAffineTransformRotate(t1, degreesToRadians(90.0));
-    //    mutableVideoComposition.renderSize = CGSizeMake(assetVideoTrack.naturalSize.height,assetVideoTrack.naturalSize.width);
-//    t1 = CGAffineTransformMakeTranslation(0.0, assetVideoTrack.naturalSize.width);
-//    t2 = CGAffineTransformRotate(t1,M_PI_2*3.0);
-//    mutableVideoComposition.renderSize = CGSizeMake(assetVideoTrack.naturalSize.height,assetVideoTrack.naturalSize.width);
-    
+
     mutableVideoComposition.frameDuration = CMTimeMake(1, 30);
     
     // The rotate transform is set on a layer instruction

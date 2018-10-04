@@ -35,9 +35,13 @@
 @property(nonatomic, strong, readonly) AVMutableComposition *compositon;
 @property(nonatomic, strong, readonly) AVMutableVideoComposition *videoCompositon;
 
+@property(nonatomic, assign) BOOL isSingleVideoChanged;
+
 - (void)addSelectAssetInfo:(SelectAssetInfo *)info;
 
 - (void)updateCurrentPlayerItem:(AVPlayerItem *)playerItem;
+
+
 
 - (void)updateComposition:(AVMutableComposition *)compositon videoCompositon:(AVMutableVideoComposition *)videoCompositon;
 

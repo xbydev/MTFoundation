@@ -88,7 +88,7 @@
 
 - (void)speedVideo:(NSURL *)videoUrl withSpeed:(CGFloat)speed success:(SuccessBlcok)successBlcok;
 
-- (void)roateVideo:(NSURL *)videoUrl withDegree:(NSInteger)degree success:(SuccessBlcok)successBlcok;
+- (void)roateVideo:(NSURL *)videoUrl withDegree:(NSInteger)degree isFirstRotate:(BOOL)isFirst success:(SuccessBlcok)successBlcok;
 
 - (void)replaceAudioInVideo:(NSURL *)videoUrl withAudio:(NSURL *)audioUrl atRange:(CMTimeRange)timeRange atVolume:(CGFloat)volume success:(SuccessBlcok)successBlcok;
 
