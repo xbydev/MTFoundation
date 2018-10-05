@@ -98,6 +98,8 @@
 
 - (void)preReplaceAudioInVideo:(NSURL *)videoUrl withAudioInfos:(NSArray *)audioInfoArr atVolume:(CGFloat)volume success:(PreSuccessBlcok)successBlcok;
 
+- (void)preReplaceAudioInPlayerItem:(AVPlayerItem *)playerItem withAudioInfos:(NSArray *)audioInfoArr atVolume:(CGFloat)volume success:(PreSuccessBlcok)successBlcok;
+
 - (void)preClipVideo:(NSURL *)videoUrl atStartTime:(CGFloat)startTime stopTime:(CGFloat)stopTime success:(PreSuccessBlcok)successBlcok;
 
 - (void)clipVideo:(NSURL *)videoUrl atStartTime:(CGFloat)startTime stopTime:(CGFloat)stopTime success:(SuccessBlcok)successBlcok;

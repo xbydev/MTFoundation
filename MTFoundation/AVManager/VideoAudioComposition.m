@@ -746,7 +746,173 @@ static NSString *const kCompositionPath = @"GLComposition";
         playerItem.audioMix = mutableAudioMix;
         successBlcok(playerItem);
     });
+}
+
+- (void)preReplaceAudioInPlayerItem:(AVPlayerItem *)playerItem withAudioInfos:(NSArray *)audioInfoArr atVolume:(CGFloat)volume success:(PreSuccessBlcok)successBlcok{
     
+    AVAsset *videoAsset = playerItem.asset;
+    
+    AVAssetTrack *assetVideoTrack = nil;
+    AVAssetTrack *assetAudioTrack = nil;
+    // Check if the asset contains video and audio tracks
+    if ([[videoAsset tracksWithMediaType:AVMediaTypeVideo] count] != 0) {
+        assetVideoTrack = [videoAsset tracksWithMediaType:AVMediaTypeVideo][0];
+    }
+    if ([[videoAsset tracksWithMediaType:AVMediaTypeAudio] count] != 0) {
+        assetAudioTrack = [videoAsset tracksWithMediaType:AVMediaTypeAudio][0];
+    }
+    
+    if (!self.composition) {
+        self.composition = [AVMutableComposition composition];
+    }
+    
+    if (assetVideoTrack != nil) {
+        AVMutableCompositionTrack *compositionVideoTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+        [compositionVideoTrack setPreferredTransform:videoAsset.preferredTransform];
+        [compositionVideoTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, [videoAsset duration]) ofTrack:assetVideoTrack atTime:kCMTimeZero error:nil];
+    }
+    
+    AVMutableCompositionTrack *compositionAudioTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+    if (assetAudioTrack != nil) {
+        [compositionAudioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, [videoAsset duration]) ofTrack:assetAudioTrack atTime:kCMTimeZero error:nil];
+    }else{
+        [compositionAudioTrack insertEmptyTimeRange:CMTimeRangeMake(kCMTimeZero, [videoAsset duration])];
+    }
+    
+    NSMutableArray *mixArray = [NSMutableArray new];
+    if (audioInfoArr.count > 0) {
+        for (RecordAudioInfo *audioInfo in audioInfoArr) {
+            
+            AVURLAsset *audioAsset = [[AVURLAsset alloc] initWithURL:[NSURL fileURLWithPath:audioInfo.audioUrl] options:nil];
+            
+            CMTime startTime = CMTimeMake(audioInfo.startTime, 1);
+            CMTimeRange timeRange = CMTimeRangeMake(startTime, audioAsset.duration);
+            
+            NSError *error = nil;
+            
+            //将超出视频长度的audio排除。
+            if (startTime.value/startTime.timescale < videoAsset.duration.value/videoAsset.duration.timescale) {
+                CGFloat audioNatureDur = audioAsset.duration.value/audioAsset.duration.timescale;
+                CGFloat startTimeValue = startTime.value/startTime.timescale;
+                CGFloat videoDuration = videoAsset.duration.value/videoAsset.duration.timescale;
+                
+                CMTimeRange compoRange = kCMTimeRangeZero;
+                if (startTimeValue + audioNatureDur < videoDuration) {
+                    //去掉timeRange这段音频
+                    [compositionAudioTrack removeTimeRange:timeRange];
+                    //然后在timeRange这段上插入空白。
+                    [compositionAudioTrack insertEmptyTimeRange:timeRange];
+                    compoRange = timeRange;
+                }else{
+                    CGFloat realDuration = videoDuration - startTimeValue;
+                    CMTime durationTime = CMTimeMake(realDuration, 1);
+                    CMTimeRange realTimeRange = CMTimeRangeMake(startTime, durationTime);
+                    [compositionAudioTrack removeTimeRange:realTimeRange];
+                    //然后在timeRange这段上插入空白。
+                    [compositionAudioTrack insertEmptyTimeRange:realTimeRange];
+                    compoRange = realTimeRange;
+                }
+                
+                AVAssetTrack *replaceAudioTrack = [audioAsset tracksWithMediaType:AVMediaTypeAudio][0];
+                // Step 3
+                // Add custom audio track to the composition
+                AVMutableCompositionTrack *compositonReplaceAudioTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+                
+                [compositonReplaceAudioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, compoRange.duration) ofTrack:replaceAudioTrack atTime:compoRange.start error:&error];
+                
+                AVMutableAudioMixInputParameters *mixParameters = [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:compositonReplaceAudioTrack];
+                [mixParameters setVolumeRampFromStartVolume:volume toEndVolume:volume timeRange:compoRange];
+                [mixArray addObject:mixParameters];
+            }
+            
+//            if (!self.composition) {
+//                self.composition = [AVMutableComposition composition];
+//
+//                if (assetAudioTrack != nil) {
+//                    AVMutableCompositionTrack *compositionAudioTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+//                    [compositionAudioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, [videoAsset duration]) ofTrack:assetAudioTrack atTime:kCMTimeZero error:&error];
+//
+//                    //去掉timeRange这段音频
+//                    [compositionAudioTrack removeTimeRange:timeRange];
+//                    //然后在timeRange这段上插入空白。
+//                    [compositionAudioTrack insertEmptyTimeRange:timeRange];
+//                }else{
+//
+//                }
+//
+//                AVAssetTrack *replaceAudioTrack = [audioAsset tracksWithMediaType:AVMediaTypeAudio][0];
+//
+//                // Step 3
+//                // Add custom audio track to the composition
+//                AVMutableCompositionTrack *compositonReplaceAudioTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+//
+//                CMTime audioDuration = audioAsset.duration;
+//                CGFloat audioValue = audioDuration.value;
+//                CGFloat audioTimescale = audioDuration.timescale;
+//                CGFloat audioNatureDur = audioValue/audioTimescale;
+//
+//                CMTime timeRangeDuration = timeRange.duration;
+//                CGFloat timeRangeValue = timeRangeDuration.value;
+//                CGFloat timeRangeTimescale = timeRangeDuration.timescale;
+//                CGFloat timeRangeNatureDur = timeRangeValue/timeRangeTimescale;
+//
+//                if (audioNatureDur > timeRangeNatureDur) {
+//                    [compositonReplaceAudioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, timeRangeDuration) ofTrack:replaceAudioTrack atTime:timeRange.start error:&error];
+//                }else{
+//                    [compositonReplaceAudioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, audioAsset.duration) ofTrack:replaceAudioTrack atTime:timeRange.start error:&error];
+//                }
+//
+//                AVMutableAudioMixInputParameters *mixParameters = [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:compositonReplaceAudioTrack];
+//                [mixParameters setVolumeRampFromStartVolume:volume toEndVolume:volume timeRange:timeRange];
+//                [mixArray addObject:mixParameters];
+//            }else{
+//                NSArray *tracks = [self.composition tracksWithMediaType:AVMediaTypeAudio];
+//                if (tracks.count > 0) {
+//                    AVMutableCompositionTrack *compositionAudioTrack = tracks[0];
+//                    //去掉timeRange这段音频
+//                    [compositionAudioTrack removeTimeRange:timeRange];
+//                    //然后在timeRange这段上插入空白。
+//                    [compositionAudioTrack insertEmptyTimeRange:timeRange];
+//                }
+//
+//                AVAssetTrack *replaceAudioTrack = [audioAsset tracksWithMediaType:AVMediaTypeAudio][0];
+//
+//                // Step 3
+//                // Add custom audio track to the composition
+//                AVMutableCompositionTrack *compositonReplaceAudioTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+//
+//                CMTime audioDuration = audioAsset.duration;
+//                CGFloat audioValue = audioDuration.value;
+//                CGFloat audioTimescale = audioDuration.timescale;
+//                CGFloat audioNatureDur = audioValue/audioTimescale;
+//
+//                CMTime timeRangeDuration = timeRange.duration;
+//                CGFloat timeRangeValue = timeRangeDuration.value;
+//                CGFloat timeRangeTimescale = timeRangeDuration.timescale;
+//                CGFloat timeRangeNatureDur = timeRangeValue/timeRangeTimescale;
+//
+//                if (audioNatureDur > timeRangeNatureDur) {
+//                    [compositonReplaceAudioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, timeRangeDuration) ofTrack:replaceAudioTrack atTime:timeRange.start error:&error];
+//                }else{
+//                    [compositonReplaceAudioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, audioAsset.duration) ofTrack:replaceAudioTrack atTime:timeRange.start error:&error];
+//                }
+//
+//                AVMutableAudioMixInputParameters *mixParameters = [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:compositonReplaceAudioTrack];
+//                [mixParameters setVolumeRampFromStartVolume:volume toEndVolume:volume timeRange:timeRange];
+//                [mixArray addObject:mixParameters];
+//            }
+        }
+    }
+    
+    AVMutableAudioMix *mutableAudioMix = [AVMutableAudioMix audioMix];
+    mutableAudioMix.inputParameters = mixArray;
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // 调用播放方法
+        AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:self.composition];
+        playerItem.audioMix = mutableAudioMix;
+        successBlcok(playerItem);
+    });
 }
 
 - (void)preClipVideo:(NSURL *)videoUrl atStartTime:(CGFloat)startTime stopTime:(CGFloat)stopTime success:(PreSuccessBlcok)successBlcok{
