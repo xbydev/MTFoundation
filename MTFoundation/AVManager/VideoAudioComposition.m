@@ -104,24 +104,11 @@ static NSString *const kCompositionPath = @"GLComposition";
         
         // 音频通道
         AVMutableCompositionTrack *audioTrack = [composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
-        
         if (assetAudioTrack) {
             // 加入合成轨道之中
             [audioTrack insertTimeRange:fastRange ofTrack:assetAudioTrack atTime:kCMTimeZero error:nil];
         }
-        
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     // 处理视频轨
     [[composition tracksWithMediaType:AVMediaTypeVideo] enumerateObjectsUsingBlock:^(AVMutableCompositionTrack * _Nonnull videoTrack, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -142,6 +129,61 @@ static NSString *const kCompositionPath = @"GLComposition";
         [MTFileManager clearCachesWithFilePath:outPutFilePath];
     }
     [self composition:composition storePath:outPutFilePath success:successBlcok];
+}
+
+- (void)preSpeedVideo:(NSURL *)videoUrl withSpeed:(CGFloat)speed success:(PreSuccessBlcok)successBlcok{
+    CGFloat fastRate = speed; //比如3.0倍加速
+    AVURLAsset *videoAsset = [[AVURLAsset alloc] initWithURL:videoUrl options:nil];
+    
+    AVMutableComposition *composition = [AVMutableComposition composition];
+    CGFloat timeScale = videoAsset.duration.timescale;
+    // 这里的startTime和endTime都是秒，需要乘以timeScale来组成CMTime
+    CMTime startTime = CMTimeMake(0 * timeScale, timeScale);
+    CMTime duration = CMTimeMake(videoAsset.duration.value * timeScale, timeScale);
+    CMTimeRange fastRange = CMTimeRangeMake(startTime, duration);
+    CMTime scaledDuration = CMTimeMake(duration.value / fastRate, timeScale);
+    
+    AVAssetTrack *assetVideoTrack = nil;
+    AVAssetTrack *assetAudioTrack = nil;
+    // Check if the asset contains video and audio tracks
+    if ([[videoAsset tracksWithMediaType:AVMediaTypeVideo] count] != 0) {
+        assetVideoTrack = [videoAsset tracksWithMediaType:AVMediaTypeVideo][0];
+        AVMutableCompositionTrack *videoTrack = [composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+        if (assetVideoTrack) {
+            // 把采集轨道数据加入到可变轨道之中
+            [videoTrack insertTimeRange:fastRange ofTrack:assetVideoTrack atTime:kCMTimeZero error:nil];
+        }
+    }
+    
+    if ([[videoAsset tracksWithMediaType:AVMediaTypeAudio] count] != 0) {
+        assetAudioTrack = [videoAsset tracksWithMediaType:AVMediaTypeAudio][0];
+        // 音频通道
+        AVMutableCompositionTrack *audioTrack = [composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+        if (assetAudioTrack) {
+            // 加入合成轨道之中
+            [audioTrack insertTimeRange:fastRange ofTrack:assetAudioTrack atTime:kCMTimeZero error:nil];
+        }
+    }
+    
+    // 处理视频轨
+    [[composition tracksWithMediaType:AVMediaTypeVideo] enumerateObjectsUsingBlock:^(AVMutableCompositionTrack * _Nonnull videoTrack, NSUInteger idx, BOOL * _Nonnull stop) {
+        [videoTrack scaleTimeRange:fastRange toDuration:scaledDuration];
+    }];
+    
+    // 处理音频轨
+    [[composition tracksWithMediaType:AVMediaTypeAudio] enumerateObjectsUsingBlock:^(AVMutableCompositionTrack * _Nonnull audioTrack, NSUInteger idx, BOOL * _Nonnull stop) {
+        // 这里需要注意，如果音频和视频的timescale不一致，那么这里需要重新计算音频需要裁剪的区间，否则会出现音频视频裁剪区间错位的问题
+        //        [audioTrack removeTimeRange:CMTimeRangeMake(kCMTimeZero, CMTimeMake(2, 1))]; //消音
+        //        [audioTrack insertEmptyTimeRange:CMTimeRangeMake(kCMTimeZero, CMTimeMake(5, timeScale))];
+        [audioTrack scaleTimeRange:fastRange toDuration:scaledDuration];
+    }];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // 调用播放方法
+        AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:composition];
+//        playerItem.audioMix = mutableAudioMix;
+        successBlcok(playerItem);
+    });
 }
 
 - (void)roateVideo:(NSURL *)videoUrl withDegree:(NSInteger)degree isFirstRotate:(BOOL)isFirst success:(SuccessBlcok)successBlcok{

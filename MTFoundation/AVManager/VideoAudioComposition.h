@@ -88,6 +88,9 @@
 
 - (void)speedVideo:(NSURL *)videoUrl withSpeed:(CGFloat)speed success:(SuccessBlcok)successBlcok;
 
+//这个接口会导致视频没有声音，暂行先不要使用。
+- (void)preSpeedVideo:(NSURL *)videoUrl withSpeed:(CGFloat)speed success:(PreSuccessBlcok)successBlcok;
+
 - (void)roateVideo:(NSURL *)videoUrl withDegree:(NSInteger)degree isFirstRotate:(BOOL)isFirst success:(SuccessBlcok)successBlcok;
 
 - (void)replaceAudioInVideo:(NSURL *)videoUrl withAudio:(NSURL *)audioUrl atRange:(CMTimeRange)timeRange atVolume:(CGFloat)volume success:(SuccessBlcok)successBlcok;
