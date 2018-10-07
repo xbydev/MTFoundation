@@ -10,6 +10,6 @@
 
 @interface AddAudioInfo : NSObject
 
-@property(nonatomic, strong)NSString *audioFilePath;
+@property(nonatomic, strong)NSMutableArray *recordAudioInfoArr;
 
 @end

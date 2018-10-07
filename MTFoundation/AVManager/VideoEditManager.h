@@ -26,9 +26,10 @@
 //字幕、配音、贴图为全局属性。
 @property(nonatomic, strong) EditSubtitleInfo *startSubtitleInfo;
 @property(nonatomic, strong) EditSubtitleInfo *endSubtitleInfo;
-@property(nonatomic, strong) AddAudioInfo *addAudioInfo;
+//@property(nonatomic, strong) AddAudioInfo *addAudioInfo;
 //@property(nonatomic, strong) EditStickerInfo *eidtStickerInfo;
 @property(nonatomic, strong) NSMutableArray *stickerInfosArr;
+@property(nonatomic, strong) NSMutableArray *audioInfosArr;
 @property(nonatomic, strong, readonly) AVPlayerItem *currentPlayerItem;
 //尝试直接处理预处理过的视频。
 

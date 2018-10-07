@@ -79,6 +79,7 @@
     if (self) {
         _selectPHAssets = [NSMutableArray new];
         _stickerInfosArr = [NSMutableArray new];
+        _audioInfosArr = [NSMutableArray new];
     }
     return self;
 }

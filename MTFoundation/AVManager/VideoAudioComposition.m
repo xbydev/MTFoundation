@@ -8,6 +8,7 @@
 #import "VideoAudioComposition.h"
 #import "MTFileManager.h"
 #import "SelectAssetInfo.h"
+#import "RecordAudioInfo.h"
 
 #define degreesToRadians( degrees ) ( ( degrees ) / 180.0 * M_PI )
 
@@ -1533,10 +1534,60 @@ static NSString *const kCompositionPath = @"GLComposition";
     mainCompositionInst.frameDuration = CMTimeMake(1, 30);
     mainCompositionInst.renderSize = CGSizeMake(640.0, 640.0);
     
-    
     if (manager.stickerInfosArr.count > 0) {
         [self addStickerLayerWithAVMutableVideoComposition:mainCompositionInst withStickerInfo:manager.stickerInfosArr];
     }
+    
+    NSMutableArray *mixArray = [NSMutableArray new];
+    if (manager.audioInfosArr.count > 0) {
+        for (RecordAudioInfo *audioInfo in manager.audioInfosArr) {
+            
+            AVURLAsset *audioAsset = [[AVURLAsset alloc] initWithURL:[NSURL fileURLWithPath:audioInfo.audioUrl] options:nil];
+            
+            CMTime startTime = CMTimeMake(audioInfo.startTime, 1);
+            CMTimeRange timeRange = CMTimeRangeMake(startTime, audioAsset.duration);
+            
+            NSError *error = nil;
+            
+            //将超出视频长度的audio排除。 duration为组合之后，视频的长度。
+            if (startTime.value/startTime.timescale < duration.value/duration.timescale) {
+                CGFloat audioNatureDur = audioAsset.duration.value/audioAsset.duration.timescale;
+                CGFloat startTimeValue = startTime.value/startTime.timescale;
+                CGFloat videoDuration = duration.value/duration.timescale;
+                
+                CMTimeRange compoRange = kCMTimeRangeZero;
+                if (startTimeValue + audioNatureDur < videoDuration) {
+                    //去掉timeRange这段音频
+                    [audioTrack removeTimeRange:timeRange];
+                    //然后在timeRange这段上插入空白。
+                    [audioTrack insertEmptyTimeRange:timeRange];
+                    compoRange = timeRange;
+                }else{
+                    CGFloat realDuration = videoDuration - startTimeValue;
+                    CMTime durationTime = CMTimeMake(realDuration, 1);
+                    CMTimeRange realTimeRange = CMTimeRangeMake(startTime, durationTime);
+                    [audioTrack removeTimeRange:realTimeRange];
+                    //然后在timeRange这段上插入空白。
+                    [audioTrack insertEmptyTimeRange:realTimeRange];
+                    compoRange = realTimeRange;
+                }
+                
+                AVAssetTrack *replaceAudioTrack = [audioAsset tracksWithMediaType:AVMediaTypeAudio][0];
+                // Step 3
+                // Add custom audio track to the composition
+                AVMutableCompositionTrack *compositonReplaceAudioTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+                
+                [compositonReplaceAudioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, compoRange.duration) ofTrack:replaceAudioTrack atTime:compoRange.start error:&error];
+                
+                AVMutableAudioMixInputParameters *mixParameters = [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:compositonReplaceAudioTrack];
+                [mixParameters setVolumeRampFromStartVolume:1 toEndVolume:1 timeRange:compoRange];
+                [mixArray addObject:mixParameters];
+            }
+        }
+    }
+    
+    AVMutableAudioMix *mutableAudioMix = [AVMutableAudioMix audioMix];
+    mutableAudioMix.inputParameters = mixArray;
     
     NSString *outPutFilePath = [[self compositionPath] stringByAppendingPathComponent:@"output.mp4"];
     //存在该文件
@@ -1544,7 +1595,11 @@ static NSString *const kCompositionPath = @"GLComposition";
         [MTFileManager clearCachesWithFilePath:outPutFilePath];
     }
 
-    [self composition:self.composition videoCompositon:mainCompositionInst audioMix:nil storePath:outPutFilePath success:successBlcok];
+    if (mixArray.count > 0) {
+        [self composition:self.composition videoCompositon:mainCompositionInst audioMix:mutableAudioMix storePath:outPutFilePath success:successBlcok];
+    }else{
+        [self composition:self.composition videoCompositon:mainCompositionInst audioMix:nil storePath:outPutFilePath success:successBlcok];
+    }
 }
 
 - (void)preCreateVideoFromManager:(VideoEditManager *)manager success:(PreSuccessBlcok)successBlcok{

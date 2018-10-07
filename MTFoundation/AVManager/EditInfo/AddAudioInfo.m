@@ -10,4 +10,13 @@
 
 @implementation AddAudioInfo
 
+- (instancetype)init{
+    self = [super init];
+    if (self) {
+        _recordAudioInfoArr = [NSMutableArray new];
+    }
+    return self;
+}
+
+
 @end
