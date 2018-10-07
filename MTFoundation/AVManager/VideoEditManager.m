@@ -92,6 +92,13 @@
     [_selectPHAssets removeAllObjects];
 }
 
+- (void)resetEditManager{
+    [self clearSelectedAsset];
+    _selectPHAssets = [NSMutableArray new];
+    _stickerInfosArr = [NSMutableArray new];
+    _audioInfosArr = [NSMutableArray new];
+}
+
 - (void)updateCurrentPlayerItem:(AVPlayerItem *)playerItem{
     self.currentPlayerItem = playerItem;
 }

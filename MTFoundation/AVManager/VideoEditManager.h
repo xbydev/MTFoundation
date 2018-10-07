@@ -42,11 +42,11 @@
 
 - (void)updateCurrentPlayerItem:(AVPlayerItem *)playerItem;
 
-
-
 - (void)updateComposition:(AVMutableComposition *)compositon videoCompositon:(AVMutableVideoComposition *)videoCompositon;
 
 - (CALayer *)builidStickerLayerWithInfo:(StickerInfo *)info;
 
 - (void)clearSelectedAsset;
+
+- (void)resetEditManager;
 @end

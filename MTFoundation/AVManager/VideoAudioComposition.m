@@ -1328,7 +1328,6 @@ static NSString *const kCompositionPath = @"GLComposition";
         
         AVAssetTrack *currentAssetTrack = [[currentAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
         UIImageOrientation currentAssetOrientation  = UIImageOrientationUp;
-        BOOL  isCurrentAssetPortrait  = NO;
         CGAffineTransform currentTransform = currentAssetTrack.preferredTransform;
         if(currentTransform.a == 0 && currentTransform.b == 1.0 && currentTransform.c == -1.0 && currentTransform.d == 0)  {
             currentAssetOrientation = UIImageOrientationRight;
@@ -1388,13 +1387,13 @@ static NSString *const kCompositionPath = @"GLComposition";
     
     AVMutableVideoComposition *mainCompositionInst = [AVMutableVideoComposition videoComposition];
     mainCompositionInst.instructions = [NSArray arrayWithObject:mainInstruction];
-    mainCompositionInst.frameDuration = CMTimeMake(1, 30);
-    mainCompositionInst.renderSize = CGSizeMake(640.0, 640.0);
+//    mainCompositionInst.frameDuration = CMTimeMake(1, 30);
+//    mainCompositionInst.renderSize = CGSizeMake(1280.f, 720.f);
 
     dispatch_async(dispatch_get_main_queue(), ^{
         // 调用播放方法
         AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:mixComposition];
-        playerItem.videoComposition = mainCompositionInst;
+//        playerItem.videoComposition = mainCompositionInst;
         successBlcok(playerItem);
     });
 }
@@ -1730,8 +1729,8 @@ static NSString *const kCompositionPath = @"GLComposition";
     
     AVMutableVideoComposition *mainCompositionInst = [AVMutableVideoComposition videoComposition];
     mainCompositionInst.instructions = [NSArray arrayWithObject:mainInstruction];
-    mainCompositionInst.frameDuration = CMTimeMake(1, 30);
-    mainCompositionInst.renderSize = CGSizeMake(640.0, 640.0);
+//    mainCompositionInst.frameDuration = CMTimeMake(1, 30);
+//    mainCompositionInst.renderSize = CGSizeMake(640.0, 320);
     
     dispatch_async(dispatch_get_main_queue(), ^{
         // 调用播放方法
