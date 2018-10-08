@@ -1398,6 +1398,110 @@ static NSString *const kCompositionPath = @"GLComposition";
     });
 }
 
+
+- (void)paddyMergerVideoVersion :(NSMutableArray *)videoPathArray
+{
+    
+    AVMutableComposition *composition = [AVMutableComposition composition];
+    AVMutableCompositionTrack *compositionVideoTrack = [composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+    AVMutableVideoComposition *videoComposition = [AVMutableVideoComposition videoComposition];
+    
+    videoComposition.frameDuration = CMTimeMake(1,30);
+    videoComposition.renderScale = 1.0;
+
+    AVMutableVideoCompositionInstruction *instruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
+    
+    AVMutableVideoCompositionLayerInstruction *layerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:compositionVideoTrack];
+    
+    float time = 0;
+
+    for (int i = 0; i < videoPathArray.count; i++) {
+        
+        AVURLAsset *sourceAsset = [AVURLAsset URLAssetWithURL:[NSURL fileURLWithPath:[videoPathArray objectAtIndex:i]] options:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:AVURLAssetPreferPreciseDurationAndTimingKey]];
+        
+        NSError *error = nil;
+        
+        BOOL ok = NO;
+        
+        AVAssetTrack *sourceVideoTrack = [[sourceAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+        
+        CGSize temp = CGSizeApplyAffineTransform(sourceVideoTrack.naturalSize, sourceVideoTrack.preferredTransform);
+        
+        CGSize size = CGSizeMake(fabsf(temp.width), fabsf(temp.height));
+        
+        CGAffineTransform transform = sourceVideoTrack.preferredTransform;
+        
+        videoComposition.renderSize = CGSizeMake(320, 480);
+        
+        if (size.width && size.height) {
+            [layerInstruction setTransform:transform atTime:CMTimeMakeWithSeconds(time, 30)];
+        }
+        else {
+            float s = 320.0/480.0;
+            CGAffineTransform new = CGAffineTransformConcat(transform, CGAffineTransformMakeScale(s,s));
+            
+            float x = (320 - size.width*s)/2;
+            
+            float y = (480 - size.height*s)/2;
+            
+            CGAffineTransform newer = CGAffineTransformConcat(new, CGAffineTransformMakeTranslation(x, y));
+            [layerInstruction setTransform:newer atTime:CMTimeMakeWithSeconds(time, 30)];
+        }
+        
+        ok = [compositionVideoTrack insertTimeRange:sourceVideoTrack.timeRange ofTrack:sourceVideoTrack atTime:[composition duration] error:&error];
+        
+        
+        
+        if (!ok) {
+            
+            // Deal with the error.
+            
+            NSLog(@"something went wrong");
+            
+        }
+        
+        time += CMTimeGetSeconds(sourceVideoTrack.timeRange.duration);
+    }
+    
+    instruction.layerInstructions = [NSArray arrayWithObject:layerInstruction];
+    
+    instruction.timeRange = compositionVideoTrack.timeRange;
+    videoComposition.instructions = [NSArray arrayWithObject:instruction];
+    
+    //----------get lost--------
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    
+    NSString *myPathDocs =[documentsDirectory stringByAppendingPathComponent:@"mergeVideo.mov"];
+    
+    NSURL *url = [NSURL fileURLWithPath:myPathDocs];
+    
+    AVAssetExportSession *exporter = [[AVAssetExportSession alloc] initWithAsset:composition presetName:AVAssetExportPresetHighestQuality];
+    
+    exporter.outputURL=url;
+    
+    [exporter setVideoComposition:videoComposition];
+    
+    exporter.outputFileType = AVFileTypeQuickTimeMovie;
+    
+    
+    
+    [exporter exportAsynchronouslyWithCompletionHandler:^
+     
+     {
+         
+         dispatch_async(dispatch_get_main_queue(), ^{
+             
+//             [self exportDidFinish:exporter];
+             
+         });
+         
+     }];
+    
+}
+
 - (void)preCompositionVideos:(NSArray <NSURL*>*)videos successWithComposition:(PreSuccessDetailBlcok)successBlcok{
     NSCAssert(_compositionName.length > 0, @"请输入转换后的名字");
     NSString *outPutFilePath = [[self compositionPath] stringByAppendingPathComponent:_compositionName];
