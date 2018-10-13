@@ -163,7 +163,7 @@ static NSString *const kVideoPath = @"MTVideo";
     //视频尺寸
     CGSize size = videoSize;
     if (CGSizeEqualToSize(size, CGSizeZero)) {
-        size = CGSizeMake(640, 480);
+        size = CGSizeMake(Comp_Video_Width, Comp_Video_Height);
     }
     //meaning that it must contain AVVideoCodecKey, AVVideoWidthKey, and AVVideoHeightKey.
     //视频信息设置
@@ -216,7 +216,8 @@ static NSString *const kVideoPath = @"MTVideo";
                 long idx = index / baseValue;
                 //先将图片转换成CVPixelBufferRef
                 UIImage *image = images[idx];
-                CVPixelBufferRef pixelBuffer = [image pixelBufferRefWithSize:size];
+                
+                CVPixelBufferRef pixelBuffer = [image pixelBufferRef];
                 if (pixelBuffer) {
                     CMTime time = CMTimeMake(index, 30);
                     if ([adaptor appendPixelBuffer:pixelBuffer withPresentationTime:time]) {
@@ -754,7 +755,7 @@ static NSString *const kVideoPath = @"MTVideo";
                             //视频尺寸
                             CGSize size = videoSize;
                             if (CGSizeEqualToSize(size, CGSizeZero)) {
-                                size = CGSizeMake(480, 480);
+                                size = CGSizeMake(Comp_Video_Width, Comp_Video_Height);
                             }
                             //meaning that it must contain AVVideoCodecKey, AVVideoWidthKey, and AVVideoHeightKey.
                             //视频信息设置

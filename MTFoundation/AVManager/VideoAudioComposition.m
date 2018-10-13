@@ -1289,92 +1289,13 @@ static NSString *const kCompositionPath = @"GLComposition";
     if ([MTFileManager fileExistsAtPath:outPutFilePath]) {
         [MTFileManager clearCachesWithFilePath:outPutFilePath];
     }
-    
-    
-//    AVMutableComposition *composition = [AVMutableComposition composition];
-//    AVMutableCompositionTrack *compositionVideoTrack = [composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
-//    AVMutableVideoComposition *videoComposition = [AVMutableVideoComposition videoComposition];
-//
-//    videoComposition.frameDuration = CMTimeMake(1,30);
-//    videoComposition.renderScale = 1.0;
-//
-//    AVMutableVideoCompositionInstruction *instruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
-//
-//    AVMutableVideoCompositionLayerInstruction *layerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:compositionVideoTrack];
-//
-//    float time = 0;
-//
-//    for (int i = 0; i < videos.count; i++) {
-//
-//        NSURL *url = videos[i];
-//        //        AVURLAsset *currentAsset = [[AVURLAsset alloc] initWithURL:url options:nil];
-//
-//        AVURLAsset *sourceAsset = [AVURLAsset URLAssetWithURL:url options:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:AVURLAssetPreferPreciseDurationAndTimingKey]];
-//
-//        NSError *error = nil;
-//
-//        BOOL ok = NO;
-//
-//        AVAssetTrack *sourceVideoTrack = [[sourceAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
-//
-//        UIImageOrientation sourceAssetOrientation_  = UIImageOrientationUp;
-//        BOOL  isSourceAssetPortrait_  = NO;
-//        CGAffineTransform sourceTransform = sourceVideoTrack.preferredTransform;
-//        if(sourceTransform.a == 0 && sourceTransform.b == 1.0 && sourceTransform.c == -1.0 && sourceTransform.d == 0)
-//        {
-//            sourceAssetOrientation_= UIImageOrientationRight;
-//            isSourceAssetPortrait_ = YES;
-//        }
-//        if(sourceTransform.a == 0 && sourceTransform.b == -1.0 && sourceTransform.c == 1.0 && sourceTransform.d == 0)
-//        {
-//            sourceAssetOrientation_ =  UIImageOrientationLeft;
-//            isSourceAssetPortrait_ = YES;
-//
-//        }
-//        if(sourceTransform.a == 1.0 && sourceTransform.b == 0 && sourceTransform.c == 0 && sourceTransform.d == 1.0)
-//        {
-//            sourceAssetOrientation_ =  UIImageOrientationUp;
-//        }
-//        if(sourceTransform.a == -1.0 && sourceTransform.b == 0 && sourceTransform.c == 0 && sourceTransform.d == -1.0)
-//        {
-//            sourceAssetOrientation_ = UIImageOrientationDown;
-//
-//        }
-//        CGFloat sourceAssetScaleToFitRatio = 320.0/sourceVideoTrack.naturalSize.width;
-//        if(isSourceAssetPortrait_){
-//            sourceAssetOrientation_ = 320.0/sourceVideoTrack.naturalSize.height;
-//            CGAffineTransform sourceAssetScaleFactor = CGAffineTransformMakeScale(sourceAssetScaleToFitRatio,sourceAssetScaleToFitRatio);
-//            [layerInstruction setTransform:CGAffineTransformConcat(sourceVideoTrack.preferredTransform, sourceAssetScaleFactor) atTime:kCMTimeZero];
-//        }else{
-//            CGAffineTransform sourceAssetScaleFactor = CGAffineTransformMakeScale(sourceAssetScaleToFitRatio,sourceAssetScaleToFitRatio);
-//            [layerInstruction setTransform:CGAffineTransformConcat(CGAffineTransformConcat(sourceVideoTrack.preferredTransform, sourceAssetScaleFactor),CGAffineTransformMakeTranslation(0, 160)) atTime:kCMTimeZero];
-//        }
-//        [layerInstruction setOpacity:0.0 atTime:sourceAsset.duration];
-//
-//        ok = [compositionVideoTrack insertTimeRange:sourceVideoTrack.timeRange ofTrack:sourceVideoTrack atTime:[composition duration] error:&error];
-//
-//        time += CMTimeGetSeconds(sourceVideoTrack.timeRange.duration);
-//    }
-//
-//    instruction.layerInstructions = [NSArray arrayWithObject:layerInstruction];
-//    instruction.timeRange = compositionVideoTrack.timeRange;
-//
-//    videoComposition.instructions = [NSArray arrayWithObject:instruction];
-//    videoComposition.renderSize = CGSizeMake(320.0, 480.0);
-//
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        // 调用播放方法
-//        AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:composition];
-//        playerItem.videoComposition = videoComposition;
-//        successBlcok(playerItem);
-//    });
-//
-//
-    
-    
-    
+
     AVMutableComposition *composition = [AVMutableComposition composition];
+    
     AVMutableCompositionTrack *compositionVideoTrack = [composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+    // 音频通道
+    AVMutableCompositionTrack *compositionAudioTrack = [composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+    
     AVMutableVideoComposition *videoComposition = [AVMutableVideoComposition videoComposition];
 
     videoComposition.frameDuration = CMTimeMake(1,30);
@@ -1398,6 +1319,11 @@ static NSString *const kCompositionPath = @"GLComposition";
         BOOL ok = NO;
 
         AVAssetTrack *sourceVideoTrack = [[sourceAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+        
+        AVAssetTrack *sourceAudioTrack = nil;
+        if ([sourceAsset tracksWithMediaType:AVMediaTypeAudio].count > 0) {
+            sourceAudioTrack = [[sourceAsset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0];
+        }
 
         CGSize temp = CGSizeApplyAffineTransform(sourceVideoTrack.naturalSize, sourceVideoTrack.preferredTransform);
 
@@ -1405,34 +1331,39 @@ static NSString *const kCompositionPath = @"GLComposition";
 
         CGAffineTransform transform = sourceVideoTrack.preferredTransform;
 
-        videoComposition.renderSize = CGSizeMake(960, 544);
+        videoComposition.renderSize = CGSizeMake(960, 540);
 
-        if (size.width > size.height) {
+        if (size.width > size.height && size.height < 540) {
             [layerInstruction setTransform:transform atTime:CMTimeMakeWithSeconds(time, 30)];
         }
         else {
-//            float s = 960.0/544.0;
-            float s = 544.0/960.0;
+            float s = 540.0/size.height;
             CGAffineTransform new = CGAffineTransformConcat(transform, CGAffineTransformMakeScale(s,s));
 
             float x = (960 - size.width*s)/2;
 
-            float y = (544 - size.height*s)/2;
+            float y = (540 - size.height*s)/2;
 
             CGAffineTransform newer = CGAffineTransformConcat(new, CGAffineTransformMakeTranslation(x, y));
             [layerInstruction setTransform:newer atTime:CMTimeMakeWithSeconds(time, 30)];
         }
 
-        ok = [compositionVideoTrack insertTimeRange:sourceVideoTrack.timeRange ofTrack:sourceVideoTrack atTime:[composition duration] error:&error];
+        CMTime currentCompDuration = [composition duration];
+        
+        ok = [compositionVideoTrack insertTimeRange:sourceVideoTrack.timeRange ofTrack:sourceVideoTrack atTime:currentCompDuration error:&error];
 
         if (!ok) {
-
-            // Deal with the error.
-
             NSLog(@"something went wrong");
-
         }
 
+        NSLog(@"the [composition duration] is %lld",[composition duration].value/[composition duration].timescale);
+        
+        if (sourceAudioTrack) {
+            [compositionAudioTrack insertTimeRange:sourceAudioTrack.timeRange ofTrack:[[sourceAsset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0] atTime:currentCompDuration error:nil];
+        }else{
+            [compositionAudioTrack insertEmptyTimeRange:CMTimeRangeMake(currentCompDuration, sourceVideoTrack.timeRange.duration)];
+        }
+        
         time += CMTimeGetSeconds(sourceVideoTrack.timeRange.duration);
     }
 
@@ -1440,7 +1371,6 @@ static NSString *const kCompositionPath = @"GLComposition";
 
     instruction.timeRange = compositionVideoTrack.timeRange;
     videoComposition.instructions = [NSArray arrayWithObject:instruction];
-
 
     dispatch_async(dispatch_get_main_queue(), ^{
         // 调用播放方法
@@ -1759,97 +1689,109 @@ static NSString *const kCompositionPath = @"GLComposition";
 - (void)createVideoFromManager:(VideoEditManager *)manager success:(SuccessBlcok)successBlcok{
     
     NSMutableArray *videos = [NSMutableArray new];
+    if (VideoEditManager.shareVideoEidtManager.startSubtitleInfo) {
+        NSURL *videoUrl = [NSURL fileURLWithPath:VideoEditManager.shareVideoEidtManager.startSubtitleInfo.subtileVideoFile];
+        [videos addObject:videoUrl];
+    }
+    
     for (SelectAssetInfo* info in manager.selectPHAssets) {
         NSURL *videoUrl = [NSURL fileURLWithPath:info.latestVideoPath];
         [videos addObject:videoUrl];
     }
     
-    if (!self.composition) {
-        self.composition = [AVMutableComposition composition];
+    if (VideoEditManager.shareVideoEidtManager.endSubtitleInfo) {
+        NSURL *videoUrl = [NSURL fileURLWithPath:VideoEditManager.shareVideoEidtManager.endSubtitleInfo.subtileVideoFile];
+        [videos addObject:videoUrl];
     }
-
+    
+    AVMutableComposition *composition = [AVMutableComposition composition];
+    
+    AVMutableCompositionTrack *compositionVideoTrack = [composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
     // 音频通道
-    AVMutableCompositionTrack *audioTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+    AVMutableCompositionTrack *compositionAudioTrack = [composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
     
-    AVMutableVideoCompositionInstruction * mainInstruction =
-    [AVMutableVideoCompositionInstruction videoCompositionInstruction];
+    AVMutableVideoComposition *videoComposition = [AVMutableVideoComposition videoComposition];
     
-    NSMutableArray *arrayInstruction = [[NSMutableArray alloc] init];
+    videoComposition.frameDuration = CMTimeMake(1,30);
+    videoComposition.renderScale = 1.0;
     
-    CMTime duration = kCMTimeZero;
-    for(int i=0;i< videos.count;i++)
-    {
+    AVMutableVideoCompositionInstruction *instruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
+    
+    AVMutableVideoCompositionLayerInstruction *layerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:compositionVideoTrack];
+    
+    float time = 0;
+    
+    for (int i = 0; i < videos.count; i++) {
+        
         NSURL *url = videos[i];
-        // 视频采集
-        AVURLAsset *currentAsset = [[AVURLAsset alloc] initWithURL:url options:nil];
+        //        AVURLAsset *currentAsset = [[AVURLAsset alloc] initWithURL:url options:nil];
         
-        AVMutableCompositionTrack *currentVideoTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+        AVURLAsset *sourceAsset = [AVURLAsset URLAssetWithURL:url options:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:AVURLAssetPreferPreciseDurationAndTimingKey]];
         
-        if ([[currentAsset tracksWithMediaType:AVMediaTypeVideo] count] != 0) {
-            [currentVideoTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, currentAsset.duration) ofTrack:[[currentAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0] atTime:duration error:nil];
+        NSError *error = nil;
+        
+        BOOL ok = NO;
+        
+        AVAssetTrack *sourceVideoTrack = [[sourceAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+        
+        AVAssetTrack *sourceAudioTrack = nil;
+        if ([sourceAsset tracksWithMediaType:AVMediaTypeAudio].count > 0) {
+            sourceAudioTrack = [[sourceAsset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0];
+        }
+        
+        CGSize temp = CGSizeApplyAffineTransform(sourceVideoTrack.naturalSize, sourceVideoTrack.preferredTransform);
+        
+        CGSize size = CGSizeMake(fabs(temp.width), fabs(temp.height));
+        
+        CGAffineTransform transform = sourceVideoTrack.preferredTransform;
+        
+        videoComposition.renderSize = CGSizeMake(960, 540);
+        
+        if (size.width > size.height && size.height < 540) {
+            [layerInstruction setTransform:transform atTime:CMTimeMakeWithSeconds(time, 30)];
+        }
+        else {
+            float s = 540.0/size.height;
+            CGAffineTransform new = CGAffineTransformConcat(transform, CGAffineTransformMakeScale(s,s));
+            
+            float x = (960 - size.width*s)/2;
+            
+            float y = (540 - size.height*s)/2;
+            
+            CGAffineTransform newer = CGAffineTransformConcat(new, CGAffineTransformMakeTranslation(x, y));
+            [layerInstruction setTransform:newer atTime:CMTimeMakeWithSeconds(time, 30)];
+        }
+        
+        CMTime currentCompDuration = [composition duration];
+        
+        ok = [compositionVideoTrack insertTimeRange:sourceVideoTrack.timeRange ofTrack:sourceVideoTrack atTime:currentCompDuration error:&error];
+        
+        if (!ok) {
+            NSLog(@"something went wrong");
+        }
+        
+        NSLog(@"the [composition duration] is %lld",[composition duration].value/[composition duration].timescale);
+        
+        if (sourceAudioTrack) {
+            [compositionAudioTrack insertTimeRange:sourceAudioTrack.timeRange ofTrack:[[sourceAsset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0] atTime:currentCompDuration error:nil];
         }else{
-            [currentVideoTrack insertEmptyTimeRange:CMTimeRangeMake(duration, currentAsset.duration)];
+            [compositionAudioTrack insertEmptyTimeRange:CMTimeRangeMake(currentCompDuration, sourceVideoTrack.timeRange.duration)];
         }
         
-        if ([[currentAsset tracksWithMediaType:AVMediaTypeAudio] count] != 0) {
-            [audioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, currentAsset.duration) ofTrack:[[currentAsset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0] atTime:duration error:nil];
-        }else{
-            [audioTrack insertEmptyTimeRange:CMTimeRangeMake(duration, currentAsset.duration)];
-        }
-        
-        AVMutableVideoCompositionLayerInstruction *currentAssetLayerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:currentVideoTrack];
-        
-        AVAssetTrack *currentAssetTrack = [[currentAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
-        UIImageOrientation currentAssetOrientation  = UIImageOrientationUp;
-        CGAffineTransform currentTransform = currentAssetTrack.preferredTransform;
-        if(currentTransform.a == 0 && currentTransform.b == 1.0 && currentTransform.c == -1.0 && currentTransform.d == 0)  {
-            currentAssetOrientation = UIImageOrientationRight;
-        }
-        if(currentTransform.a == 0 && currentTransform.b == -1.0 && currentTransform.c == 1.0 && currentTransform.d == 0)  {
-            currentAssetOrientation =  UIImageOrientationLeft;
-        }
-        if(currentTransform.a == 1.0 && currentTransform.b == 0 && currentTransform.c == 0 && currentTransform.d == 1.0)
-        {
-            currentAssetOrientation =  UIImageOrientationUp;
-        }
-        if(currentTransform.a == -1.0 && currentTransform.b == 0 && currentTransform.c == 0 && currentTransform.d == -1.0) {
-            currentAssetOrientation = UIImageOrientationDown;
-        }
-        
-        CGAffineTransform t1;
-        CGAffineTransform t2;
-        
-        if (currentAssetOrientation == UIImageOrientationRight) {
-            t1 = CGAffineTransformMakeTranslation(currentAssetTrack.naturalSize.height,0.0);
-            t2 = CGAffineTransformRotate(t1,M_PI_2);
-        }else if (currentAssetOrientation == UIImageOrientationDown){
-            t1 = CGAffineTransformMakeTranslation(currentAssetTrack.naturalSize.width, currentAssetTrack.naturalSize.height);
-            t2 = CGAffineTransformRotate(t1,M_PI);
-        }else if (currentAssetOrientation == UIImageOrientationLeft){
-            t1 = CGAffineTransformMakeTranslation(0.0, currentAssetTrack.naturalSize.width);
-            t2 = CGAffineTransformRotate(t1,M_PI_2*3.0);
-        }else{
-            t1 = CGAffineTransformMakeTranslation(0.0, 0);
-            t2 = CGAffineTransformRotate(t1,M_PI_2*4.0);
-        }
-        
-        [currentAssetLayerInstruction setTransform:t2 atTime:duration];
-        duration = CMTimeAdd(duration, currentAsset.duration);
-        [currentAssetLayerInstruction setOpacity:0.0 atTime:duration];
-        [arrayInstruction addObject:currentAssetLayerInstruction];
+        time += CMTimeGetSeconds(sourceVideoTrack.timeRange.duration);
     }
     
-    mainInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, duration);
-    mainInstruction.layerInstructions = arrayInstruction;
+    instruction.layerInstructions = [NSArray arrayWithObject:layerInstruction];
+    instruction.timeRange = compositionVideoTrack.timeRange;
     
-    AVMutableVideoComposition *mainCompositionInst = [AVMutableVideoComposition videoComposition];
-    mainCompositionInst.instructions = [NSArray arrayWithObject:mainInstruction];
-    mainCompositionInst.frameDuration = CMTimeMake(1, 30);
-    mainCompositionInst.renderSize = CGSizeMake(640.0, 640.0);
+    videoComposition.instructions = [NSArray arrayWithObject:instruction];
+    videoComposition.renderSize = CGSizeMake(Comp_Video_Width, Comp_Video_Height);
     
     if (manager.stickerInfosArr.count > 0) {
-        [self addStickerLayerWithAVMutableVideoComposition:mainCompositionInst withStickerInfo:manager.stickerInfosArr];
+        [self addStickerLayerWithAVMutableVideoComposition:videoComposition withStickerInfo:manager.stickerInfosArr];
     }
+    
+    CMTime duration = CMTimeMake(time, 1);
     
     NSMutableArray *mixArray = [NSMutableArray new];
     if (manager.audioInfosArr.count > 0) {
@@ -1871,24 +1813,24 @@ static NSString *const kCompositionPath = @"GLComposition";
                 CMTimeRange compoRange = kCMTimeRangeZero;
                 if (startTimeValue + audioNatureDur < videoDuration) {
                     //去掉timeRange这段音频
-                    [audioTrack removeTimeRange:timeRange];
+                    [compositionAudioTrack removeTimeRange:timeRange];
                     //然后在timeRange这段上插入空白。
-                    [audioTrack insertEmptyTimeRange:timeRange];
+                    [compositionAudioTrack insertEmptyTimeRange:timeRange];
                     compoRange = timeRange;
                 }else{
                     CGFloat realDuration = videoDuration - startTimeValue;
                     CMTime durationTime = CMTimeMake(realDuration, 1);
                     CMTimeRange realTimeRange = CMTimeRangeMake(startTime, durationTime);
-                    [audioTrack removeTimeRange:realTimeRange];
+                    [compositionAudioTrack removeTimeRange:realTimeRange];
                     //然后在timeRange这段上插入空白。
-                    [audioTrack insertEmptyTimeRange:realTimeRange];
+                    [compositionAudioTrack insertEmptyTimeRange:realTimeRange];
                     compoRange = realTimeRange;
                 }
                 
                 AVAssetTrack *replaceAudioTrack = [audioAsset tracksWithMediaType:AVMediaTypeAudio][0];
                 // Step 3
                 // Add custom audio track to the composition
-                AVMutableCompositionTrack *compositonReplaceAudioTrack = [self.composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+                AVMutableCompositionTrack *compositonReplaceAudioTrack = [composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
                 
                 [compositonReplaceAudioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, compoRange.duration) ofTrack:replaceAudioTrack atTime:compoRange.start error:&error];
                 
@@ -1907,11 +1849,11 @@ static NSString *const kCompositionPath = @"GLComposition";
     if ([MTFileManager fileExistsAtPath:outPutFilePath]) {
         [MTFileManager clearCachesWithFilePath:outPutFilePath];
     }
-
+    
     if (mixArray.count > 0) {
-        [self composition:self.composition videoCompositon:mainCompositionInst audioMix:mutableAudioMix storePath:outPutFilePath success:successBlcok];
+        [self composition:composition videoCompositon:videoComposition audioMix:mutableAudioMix storePath:outPutFilePath success:successBlcok];
     }else{
-        [self composition:self.composition videoCompositon:mainCompositionInst audioMix:nil storePath:outPutFilePath success:successBlcok];
+        [self composition:composition videoCompositon:videoComposition audioMix:nil storePath:outPutFilePath success:successBlcok];
     }
 }
 

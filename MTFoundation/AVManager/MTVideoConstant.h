@@ -8,6 +8,10 @@
 #ifndef MTVideoConstant_h
 #define MTVideoConstant_h
 
+
+#define Comp_Video_Width  960  //视频宽
+#define Comp_Video_Height 540  //视频高
+
 /**
  合成类型
  */

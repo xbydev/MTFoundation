@@ -20,7 +20,7 @@
  */
 - (CVPixelBufferRef)pixelBufferRefWithSize:(CGSize)size;
 
-
+- (CVPixelBufferRef)pixelBufferRef;
 /**
  将CMSampleBufferRef转换为UIImage
 
@@ -37,4 +37,5 @@
  @return 返回UIImage
  */
 + (UIImage*)imageFromPixelBuffer:(CVPixelBufferRef)pixelBuffer;
+
 @end
