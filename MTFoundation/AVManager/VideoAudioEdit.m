@@ -224,6 +224,9 @@ static NSString *const kVideoPath = @"MTVideo";
                         
                         NSLog(@"OK++%f",CMTimeGetSeconds(time));
                     }else{
+                        if (assetWriter.status == AVAssetWriterStatusFailed) {
+                            NSLog(@"the AVAsset.error is %@",assetWriter.error);
+                        }
                         NSLog(@"Fail");
                     }
                     CFRelease(pixelBuffer);
@@ -929,13 +932,20 @@ static NSString *const kVideoPath = @"MTVideo";
     AVMutableComposition *mutableComposition = [AVMutableComposition composition];
     //合成轨道
     AVMutableCompositionTrack *videoCompositionTrack = [mutableComposition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
-//    AVMutableCompositionTrack *audioCompositionTrack = [mutableComposition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+    AVMutableCompositionTrack *audioCompositionTrack = [mutableComposition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
     //视频采集
     AVAssetTrack *videoAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
-//    AVAssetTrack *audioAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0];
+    
+    AVAssetTrack *audioAssetTrack = nil;
+    if ([videoAsset tracksWithMediaType:AVMediaTypeAudio].count > 0) {
+        audioAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0];
+    }
     //加入合成轨道
     [videoCompositionTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, videoAssetTrack.timeRange.duration) ofTrack:videoAssetTrack atTime:kCMTimeZero error:nil];
-//    [audioCompositionTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, audioAssetTrack.timeRange.duration) ofTrack:audioAssetTrack atTime:kCMTimeZero error:nil];
+    if (audioAssetTrack) {
+        [audioCompositionTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, audioAssetTrack.timeRange.duration) ofTrack:audioAssetTrack atTime:kCMTimeZero error:nil];
+    }
+
     //创建合成指令
     AVMutableVideoCompositionInstruction *videoCompostionInstruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
     //设置时间范围
@@ -1043,10 +1053,18 @@ static NSString *const kVideoPath = @"MTVideo";
             //添加文字
 //            UIFont *font = [UIFont systemFontOfSize:info.fontSize];
             UIFont *font = [UIFont boldSystemFontOfSize:info.fontSize];
+        
             NSString *text = info.text;
             CATextLayer *textLayer = [[CATextLayer alloc] init];
-            [textLayer setFontSize:info.fontSize];
+            
+            CFStringRef fontName = (__bridge CFStringRef)font.fontName;
+            CGFontRef fontRef = CGFontCreateWithFontName(fontName);
+            textLayer.font = fontRef;
+            textLayer.fontSize = info.fontSize;
+            CGFontRelease(fontRef);
+            
             [textLayer setString:text];
+        
             [textLayer setAlignmentMode:kCAAlignmentCenter];
             [textLayer setForegroundColor:info.textColor.CGColor];
 

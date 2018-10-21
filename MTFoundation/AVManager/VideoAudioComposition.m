@@ -42,12 +42,12 @@ static NSString *const kCompositionPath = @"GLComposition";
     // 视频采集
     AVURLAsset *videoAsset = [[AVURLAsset alloc] initWithURL:videoUrl options:nil];
     
-    videoTimeRange = [self fitTimeRange:videoTimeRange avUrlAsset:videoAsset];
+//    videoTimeRange = [self fitTimeRange:videoTimeRange avUrlAsset:videoAsset];
     
     // 音频采集
     AVURLAsset *audioAsset = [[AVURLAsset alloc] initWithURL:audioUrl options:nil];
     
-    audioTimeRange = [self fitTimeRange:audioTimeRange avUrlAsset:audioAsset];
+//    audioTimeRange = [self fitTimeRange:audioTimeRange avUrlAsset:audioAsset];
     
     
     if (CMTimeCompare(videoTimeRange.duration,audioTimeRange.duration))
@@ -1341,6 +1341,7 @@ static NSString *const kCompositionPath = @"GLComposition";
             float y = (540 - size.height*s)/2;
             CGAffineTransform newer = CGAffineTransformConcat(new, CGAffineTransformMakeTranslation(x, y));
             [layerInstruction setTransform:newer atTime:CMTimeMakeWithSeconds(time, 30)];
+
 //            [layerInstruction setTransform:transform atTime:CMTimeMakeWithSeconds(time, 30)];
         }
         else {
@@ -1387,7 +1388,7 @@ static NSString *const kCompositionPath = @"GLComposition";
     });
     
     
-    
+//    [0]    NSURL *    @"file:///var/mobile/Containers/Data/Application/5929371D-594C-477A-AA6D-7A87EF10CACC/Documents/MTVideo/IMG_5116..mp4"    0x00000001704a1020[1]    NSURL *    @"file:///var/mobile/Containers/Data/Application/5929371D-594C-477A-AA6D-7A87EF10CACC/Documents/MTVideo/IMG_5118..mp4"    0x00000001704a1440[2]    NSURL *    @"file:///var/mobile/Containers/Data/Application/5929371D-594C-477A-AA6D-7A87EF10CACC/Documents/MTVideo/IMG_5115..mp4"    0x00000001704a1500[3]    NSURL *    @"file:///var/mobile/Containers/Data/Application/5929371D-594C-477A-AA6D-7A87EF10CACC/Documents/MTVideo/IMG_5117..mp4"    0x00000001704a14a0[4]    NSURL *    @"file:///var/mobile/Containers/Data/Application/5929371D-594C-477A-AA6D-7A87EF10CACC/Documents/MTVideo/IMG_5111..mp4"    0x00000001704a1560[5]    NSURL *    @"file:///var/mobile/Containers/Data/Application/5929371D-594C-477A-AA6D-7A87EF10CACC/Documents/MTVideo/IMG_5120..mp4"    0x00000001704a0d20[6]    NSURL *    @"file:///var/mobile/Containers/Data/Application/5929371D-594C-477A-AA6D-7A87EF10CACC/Documents/MTVideo/IMG_5119..mp4"    0x00000001704a0d80
 //
 //    // 创建可变的音视频组合
 //    AVMutableComposition *mixComposition = [AVMutableComposition composition];
