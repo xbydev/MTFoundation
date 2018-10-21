@@ -1041,7 +1041,8 @@ static NSString *const kVideoPath = @"MTVideo";
     if (textWatermarks.count > 0) {
         for (TextWaterMarkInfo *info in textWatermarks) {
             //添加文字
-            UIFont *font = [UIFont systemFontOfSize:info.fontSize];
+//            UIFont *font = [UIFont systemFontOfSize:info.fontSize];
+            UIFont *font = [UIFont boldSystemFontOfSize:info.fontSize];
             NSString *text = info.text;
             CATextLayer *textLayer = [[CATextLayer alloc] init];
             [textLayer setFontSize:info.fontSize];
