@@ -1756,7 +1756,13 @@ static NSString *const kCompositionPath = @"GLComposition";
         videoComposition.renderSize = CGSizeMake(960, 540);
         
         if (size.width > size.height && size.height < 540) {
-            [layerInstruction setTransform:transform atTime:CMTimeMakeWithSeconds(time, 30)];
+            float s = 1;
+            CGAffineTransform new = CGAffineTransformConcat(transform, CGAffineTransformMakeScale(s,s));
+            float x = (960 - size.width*s)/2;
+            float y = (540 - size.height*s)/2;
+            CGAffineTransform newer = CGAffineTransformConcat(new, CGAffineTransformMakeTranslation(x, y));
+            [layerInstruction setTransform:newer atTime:CMTimeMakeWithSeconds(time, 30)];
+//            [layerInstruction setTransform:transform atTime:CMTimeMakeWithSeconds(time, 30)];
         }
         else {
             float s = 540.0/size.height;
