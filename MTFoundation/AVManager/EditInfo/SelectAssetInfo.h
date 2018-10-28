@@ -15,7 +15,7 @@
 #import "EditStickerInfo.h"
 #import "EditSubtitleInfo.h"
 
-@interface SelectAssetInfo : NSObject
+@interface SelectAssetInfo : NSObject<NSCopying>
 
 @property(nonatomic, strong)PHAsset *asset; //由于有本地录制的视频，改字段有可能为空
 @property(nonatomic, strong)NSString *type; //取值为image 和 video

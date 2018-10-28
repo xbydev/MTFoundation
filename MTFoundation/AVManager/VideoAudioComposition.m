@@ -81,7 +81,8 @@ static NSString *const kCompositionPath = @"GLComposition";
     
     // 这里的startTime和endTime都是秒，需要乘以timeScale来组成CMTime
     CMTime startTime = CMTimeMake(0 * timeScale, timeScale);
-    CMTime duration = CMTimeMake(videoAsset.duration.value * timeScale, timeScale);
+//    CMTime duration = CMTimeMake(videoAsset.duration.value * timeScale, timeScale);
+    CMTime duration = CMTimeMake(videoAsset.duration.value, timeScale);
     CMTimeRange fastRange = CMTimeRangeMake(startTime, duration);
     CMTime scaledDuration = CMTimeMake(duration.value / fastRate, timeScale);
     
@@ -123,7 +124,13 @@ static NSString *const kCompositionPath = @"GLComposition";
                 [audioTrack scaleTimeRange:fastRange toDuration:scaledDuration];
     }];
     
-    NSString *outPutFilePath = [[self compositionPath] stringByAppendingPathComponent:@"abc.mp4"];
+    NSString *videoPath = videoUrl.path;
+    NSRange range = NSMakeRange(0, videoPath.length - 4);
+    NSString *pathPre = [videoPath substringWithRange:range];
+    NSString *outPutFilePath = [NSString stringWithFormat:@"%@-speed.mp4",pathPre];
+//    NSString *outPutFilePath = [[self compositionPath] stringByAppendingPathComponent:@"abc.mp4"];
+    
+//    NSString *outPutFilePath = [[self compositionPath] stringByAppendingPathComponent:@"abc.mp4"];
     //存在该文件
     if ([MTFileManager fileExistsAtPath:outPutFilePath]) {
         [MTFileManager clearCachesWithFilePath:outPutFilePath];
@@ -255,7 +262,11 @@ static NSString *const kCompositionPath = @"GLComposition";
     instruction.layerInstructions = @[layerInstruction];
     mutableVideoComposition.instructions = @[instruction];
     
-    NSString *outPutFilePath = [[self compositionPath] stringByAppendingPathComponent:self.compositionName];
+    NSString *videoPath = videoUrl.path;
+    NSRange range = NSMakeRange(0, videoPath.length - 4);
+    NSString *pathPre = [videoPath substringWithRange:range];
+    NSString *outPutFilePath = [NSString stringWithFormat:@"%@-rotate.mp4",pathPre];
+//    NSString *outPutFilePath = [[self compositionPath] stringByAppendingPathComponent:self.compositionName];
     //存在该文件
     if ([MTFileManager fileExistsAtPath:outPutFilePath]) {
         [MTFileManager clearCachesWithFilePath:outPutFilePath];
