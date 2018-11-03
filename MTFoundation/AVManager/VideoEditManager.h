@@ -46,6 +46,8 @@
 
 - (CALayer *)builidStickerLayerWithInfo:(StickerInfo *)info;
 
+- (CALayer *)builidStickerLayerWithInfo:(StickerInfo *)info destViewSize:(CGSize)destSize;
+
 - (void)clearSelectedAsset;
 
 - (void)resetEditManager;

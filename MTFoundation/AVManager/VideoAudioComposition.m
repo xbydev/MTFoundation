@@ -1247,40 +1247,30 @@ static NSString *const kCompositionPath = @"GLComposition";
     
     [parentLayer addSublayer:videoLayer];
     
+    mutableVideoComposition.animationTool = [AVVideoCompositionCoreAnimationTool videoCompositionCoreAnimationToolWithPostProcessingAsVideoLayer:videoLayer inLayer:parentLayer];
+    
     if (stickerInfos.count > 0) {
         for (StickerInfo *info in stickerInfos) {
             if (info.stickerImg) {
                 CALayer *overlayLayer = [CALayer layer];
                 [overlayLayer setContents:(id)[info.stickerImg CGImage]];
-                
                 if (videoSize.width > 0 && info.parentSize.width > 0) {
-                    CGFloat centerX = videoSize.width * info.centerPoint.x / info.parentSize.width;
-                    CGFloat centerY = videoSize.height * info.centerPoint.y / info.parentSize.height;
-                    CGFloat width = videoSize.width * info.stickerWidth / info.parentSize.width;
-                    overlayLayer.frame = CGRectMake(centerX - width/2, centerY - width/2, width, width);
+                    CGFloat startX = videoSize.width * info.startX / info.parentSize.width;
+                    CGFloat startY = videoSize.height * info.startY / info.parentSize.height;
+                    overlayLayer.frame = CGRectMake(startX, startY, info.stickerWidth * 2, info.stickerHeight * 2);
+                    overlayLayer.transform = info.transformForComposition;
                 }else{
                     overlayLayer.frame = CGRectZero;
                 }
                 [overlayLayer setMasksToBounds:YES];
+                overlayLayer.opacity = 0;
                 
-                CABasicAnimation *animation =
-                [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
-                animation.duration = info.duration;
-                animation.repeatCount = 0;
-                //    animation.autoreverses=YES;
-                // rotate from 0 to 360
-                animation.fromValue=[NSNumber numberWithFloat:info.rotate];
-                animation.toValue=[NSNumber numberWithFloat:info.rotate];
-                animation.beginTime = info.startTime;
-                animation.fillMode = kCAFillModeForwards;
-                [overlayLayer addAnimation:animation forKey:@"rotation"];
-                
-                animation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-                [animation setDuration:0];
+                CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+                [animation setBeginTime:AVCoreAnimationBeginTimeAtZero + info.startTime];
                 [animation setFromValue:[NSNumber numberWithFloat:1.0]];
-                [animation setToValue:[NSNumber numberWithFloat:0.0]];
-                [animation setBeginTime:info.startTime + info.duration];
-                [animation setRemovedOnCompletion:NO];
+                [animation setToValue:[NSNumber numberWithFloat:1.0]];
+                [animation setDuration:info.duration];
+                [animation setRemovedOnCompletion:YES];
                 [animation setFillMode:kCAFillModeForwards];
                 [overlayLayer addAnimation:animation forKey:@"animateOpacity"];
                 
@@ -1288,8 +1278,6 @@ static NSString *const kCompositionPath = @"GLComposition";
             }
         }
     }
-    
-    mutableVideoComposition.animationTool = [AVVideoCompositionCoreAnimationTool videoCompositionCoreAnimationToolWithPostProcessingAsVideoLayer:videoLayer inLayer:parentLayer];
 }
 
 - (void)preCompositionVideos:(NSArray <NSURL*>*)videos success:(PreSuccessBlcok)successBlcok{
