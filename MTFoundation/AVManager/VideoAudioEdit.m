@@ -944,6 +944,8 @@ static NSString *const kVideoPath = @"MTVideo";
     [videoCompositionTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, videoAssetTrack.timeRange.duration) ofTrack:videoAssetTrack atTime:kCMTimeZero error:nil];
     if (audioAssetTrack) {
         [audioCompositionTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, audioAssetTrack.timeRange.duration) ofTrack:audioAssetTrack atTime:kCMTimeZero error:nil];
+    }else{
+        [mutableComposition removeTrack:audioCompositionTrack];
     }
 
     //创建合成指令

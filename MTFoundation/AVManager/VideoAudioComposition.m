@@ -1800,7 +1800,12 @@ static NSString *const kCompositionPath = @"GLComposition";
         if (sourceAudioTrack) {
             [compositionAudioTrack insertTimeRange:sourceAudioTrack.timeRange ofTrack:[[sourceAsset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0] atTime:currentCompDuration error:nil];
         }else{
-            [compositionAudioTrack insertEmptyTimeRange:CMTimeRangeMake(currentCompDuration, sourceVideoTrack.timeRange.duration)];
+            if (videos.count > 1) {
+                [compositionAudioTrack insertEmptyTimeRange:CMTimeRangeMake(currentCompDuration, sourceVideoTrack.timeRange.duration)];
+            }else{
+//                [composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+                [composition removeTrack:compositionAudioTrack];
+            }
         }
         
         time += CMTimeGetSeconds(sourceVideoTrack.timeRange.duration);
