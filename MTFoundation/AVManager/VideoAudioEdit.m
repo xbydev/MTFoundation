@@ -951,7 +951,8 @@ static NSString *const kVideoPath = @"MTVideo";
     //创建合成指令
     AVMutableVideoCompositionInstruction *videoCompostionInstruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
     //设置时间范围
-    videoCompostionInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, videoAssetTrack.timeRange.duration);
+//    videoCompostionInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, videoAssetTrack.timeRange.duration);
+    videoCompostionInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, mutableComposition.duration);
     //创建层指令，并将其与合成视频轨道相关联
     AVMutableVideoCompositionLayerInstruction *videoLayerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:videoCompositionTrack];
     

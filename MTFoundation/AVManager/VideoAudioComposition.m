@@ -1303,7 +1303,7 @@ static NSString *const kCompositionPath = @"GLComposition";
     AVMutableVideoCompositionInstruction *instruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
 
     AVMutableVideoCompositionLayerInstruction *layerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:compositionVideoTrack];
-
+    
     float time = 0;
 
     for (int i = 0; i < videos.count; i++) {
@@ -1317,7 +1317,10 @@ static NSString *const kCompositionPath = @"GLComposition";
 
         BOOL ok = NO;
 
-        AVAssetTrack *sourceVideoTrack = [[sourceAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+        AVAssetTrack *sourceVideoTrack = nil;
+        if ([sourceAsset tracksWithMediaType:AVMediaTypeVideo].count > 0) {
+            sourceVideoTrack = [[sourceAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+        }
         
         AVAssetTrack *sourceAudioTrack = nil;
         if ([sourceAsset tracksWithMediaType:AVMediaTypeAudio].count > 0) {
@@ -1329,19 +1332,17 @@ static NSString *const kCompositionPath = @"GLComposition";
         CGSize size = CGSizeMake(fabs(temp.width), fabs(temp.height));
 
         CGAffineTransform transform = sourceVideoTrack.preferredTransform;
-
+        
         videoComposition.renderSize = CGSizeMake(960, 540);
 
         if (size.width > size.height && size.height < 540) {
-            
+
             float s = 1;
             CGAffineTransform new = CGAffineTransformConcat(transform, CGAffineTransformMakeScale(s,s));
             float x = (960 - size.width*s)/2;
             float y = (540 - size.height*s)/2;
             CGAffineTransform newer = CGAffineTransformConcat(new, CGAffineTransformMakeTranslation(x, y));
-            [layerInstruction setTransform:newer atTime:CMTimeMakeWithSeconds(time, 30)];
-
-//            [layerInstruction setTransform:transform atTime:CMTimeMakeWithSeconds(time, 30)];
+            [layerInstruction setTransform:newer atTime:CMTimeMakeWithSeconds(time * 600, 30 * 600)];
         }
         else {
             float s = 540.0/size.height;
@@ -1352,7 +1353,7 @@ static NSString *const kCompositionPath = @"GLComposition";
             float y = (540 - size.height*s)/2;
 
             CGAffineTransform newer = CGAffineTransformConcat(new, CGAffineTransformMakeTranslation(x, y));
-            [layerInstruction setTransform:newer atTime:CMTimeMakeWithSeconds(time, 30)];
+            [layerInstruction setTransform:newer atTime:CMTimeMakeWithSeconds(time * 600, 30 * 600)];
         }
 
         CMTime currentCompDuration = [composition duration];
@@ -1375,8 +1376,7 @@ static NSString *const kCompositionPath = @"GLComposition";
     }
 
     instruction.layerInstructions = [NSArray arrayWithObject:layerInstruction];
-
-    instruction.timeRange = compositionVideoTrack.timeRange;
+    instruction.timeRange = CMTimeRangeMake(kCMTimeZero, [composition duration]);
     videoComposition.instructions = [NSArray arrayWithObject:instruction];
 
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -1385,9 +1385,6 @@ static NSString *const kCompositionPath = @"GLComposition";
         playerItem.videoComposition = videoComposition;
         successBlcok(playerItem);
     });
-    
-    
-//    [0]    NSURL *    @"file:///var/mobile/Containers/Data/Application/5929371D-594C-477A-AA6D-7A87EF10CACC/Documents/MTVideo/IMG_5116..mp4"    0x00000001704a1020[1]    NSURL *    @"file:///var/mobile/Containers/Data/Application/5929371D-594C-477A-AA6D-7A87EF10CACC/Documents/MTVideo/IMG_5118..mp4"    0x00000001704a1440[2]    NSURL *    @"file:///var/mobile/Containers/Data/Application/5929371D-594C-477A-AA6D-7A87EF10CACC/Documents/MTVideo/IMG_5115..mp4"    0x00000001704a1500[3]    NSURL *    @"file:///var/mobile/Containers/Data/Application/5929371D-594C-477A-AA6D-7A87EF10CACC/Documents/MTVideo/IMG_5117..mp4"    0x00000001704a14a0[4]    NSURL *    @"file:///var/mobile/Containers/Data/Application/5929371D-594C-477A-AA6D-7A87EF10CACC/Documents/MTVideo/IMG_5111..mp4"    0x00000001704a1560[5]    NSURL *    @"file:///var/mobile/Containers/Data/Application/5929371D-594C-477A-AA6D-7A87EF10CACC/Documents/MTVideo/IMG_5120..mp4"    0x00000001704a0d20[6]    NSURL *    @"file:///var/mobile/Containers/Data/Application/5929371D-594C-477A-AA6D-7A87EF10CACC/Documents/MTVideo/IMG_5119..mp4"    0x00000001704a0d80
 //
 //    // 创建可变的音视频组合
 //    AVMutableComposition *mixComposition = [AVMutableComposition composition];
