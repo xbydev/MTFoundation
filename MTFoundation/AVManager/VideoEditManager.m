@@ -146,6 +146,10 @@
     _selectPHAssets = [NSMutableArray new];
     _stickerInfosArr = [NSMutableArray new];
     _audioInfosArr = [NSMutableArray new];
+    
+    _startSubtitleInfo = nil;
+    _endSubtitleInfo = nil;
+    _currentPlayerItem = nil;
 }
 
 - (void)updateCurrentPlayerItem:(AVPlayerItem *)playerItem{
