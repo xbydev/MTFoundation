@@ -26,4 +26,6 @@
 @property(nonatomic, assign) CGPoint centerPoint;
 @property(nonatomic, assign) CGFloat rotate; //旋转的弧度值
 
+@property(nonatomic, assign) NSInteger stickerTag;
+
 @end
