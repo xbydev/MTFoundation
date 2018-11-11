@@ -1291,7 +1291,7 @@ static NSString *const kCompositionPath = @"GLComposition";
 
     AVMutableComposition *composition = [AVMutableComposition composition];
     
-    AVMutableCompositionTrack *compositionVideoTrack = [composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+//    AVMutableCompositionTrack *compositionVideoTrack = [composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
     // 音频通道
     AVMutableCompositionTrack *compositionAudioTrack = [composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
     
@@ -1302,7 +1302,9 @@ static NSString *const kCompositionPath = @"GLComposition";
 
     AVMutableVideoCompositionInstruction *instruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
 
-    AVMutableVideoCompositionLayerInstruction *layerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:compositionVideoTrack];
+//    AVMutableVideoCompositionLayerInstruction *layerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:compositionVideoTrack];
+    
+    NSMutableArray *arrayInstruction = [[NSMutableArray alloc] init];
     
     float time = 0;
 
@@ -1316,11 +1318,15 @@ static NSString *const kCompositionPath = @"GLComposition";
         NSError *error = nil;
 
         BOOL ok = NO;
+        
+        AVMutableCompositionTrack *compositionVideoTrack = [composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
 
         AVAssetTrack *sourceVideoTrack = nil;
         if ([sourceAsset tracksWithMediaType:AVMediaTypeVideo].count > 0) {
             sourceVideoTrack = [[sourceAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
         }
+        
+        AVMutableVideoCompositionLayerInstruction *currentAssetLayerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:compositionVideoTrack];
         
         AVAssetTrack *sourceAudioTrack = nil;
         if ([sourceAsset tracksWithMediaType:AVMediaTypeAudio].count > 0) {
@@ -1342,7 +1348,8 @@ static NSString *const kCompositionPath = @"GLComposition";
             float x = (960 - size.width*s)/2;
             float y = (540 - size.height*s)/2;
             CGAffineTransform newer = CGAffineTransformConcat(new, CGAffineTransformMakeTranslation(x, y));
-            [layerInstruction setTransform:newer atTime:CMTimeMakeWithSeconds(time * 600, 30 * 600)];
+            [currentAssetLayerInstruction setTransform:newer atTime:kCMTimeZero];
+//            [currentAssetLayerInstruction setTransform:newer atTime:CMTimeMakeWithSeconds(time * 600, 30 * 600)];
         }
         else {
             float s = 540.0/size.height;
@@ -1353,7 +1360,8 @@ static NSString *const kCompositionPath = @"GLComposition";
             float y = (540 - size.height*s)/2;
 
             CGAffineTransform newer = CGAffineTransformConcat(new, CGAffineTransformMakeTranslation(x, y));
-            [layerInstruction setTransform:newer atTime:CMTimeMakeWithSeconds(time * 600, 30 * 600)];
+//            [currentAssetLayerInstruction setTransform:newer atTime:CMTimeMakeWithSeconds(time * 600, 30 * 600)];
+            [currentAssetLayerInstruction setTransform:newer atTime:kCMTimeZero];
         }
 
         CMTime currentCompDuration = [composition duration];
@@ -1372,10 +1380,13 @@ static NSString *const kCompositionPath = @"GLComposition";
             [compositionAudioTrack insertEmptyTimeRange:CMTimeRangeMake(currentCompDuration, sourceVideoTrack.timeRange.duration)];
         }
         
+        [currentAssetLayerInstruction setOpacity:0.0 atTime:[composition duration]];
+        [arrayInstruction addObject:currentAssetLayerInstruction];
+        
         time += CMTimeGetSeconds(sourceVideoTrack.timeRange.duration);
     }
 
-    instruction.layerInstructions = [NSArray arrayWithObject:layerInstruction];
+    instruction.layerInstructions = arrayInstruction;
     instruction.timeRange = CMTimeRangeMake(kCMTimeZero, [composition duration]);
     videoComposition.instructions = [NSArray arrayWithObject:instruction];
 
