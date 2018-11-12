@@ -1870,7 +1870,8 @@ static NSString *const kCompositionPath = @"GLComposition";
     AVMutableAudioMix *mutableAudioMix = [AVMutableAudioMix audioMix];
     mutableAudioMix.inputParameters = mixArray;
     
-    NSString *outPutFilePath = [[self compositionPath] stringByAppendingPathComponent:@"output.mp4"];
+//    NSString *outPutFilePath = [[self compositionPath] stringByAppendingPathComponent:@"output.mp4"];
+    NSString *outPutFilePath = self.compositionName;
     //存在该文件
     if ([MTFileManager fileExistsAtPath:outPutFilePath]) {
         [MTFileManager clearCachesWithFilePath:outPutFilePath];
