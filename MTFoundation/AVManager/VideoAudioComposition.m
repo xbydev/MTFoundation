@@ -1736,6 +1736,8 @@ static NSString *const kCompositionPath = @"GLComposition";
     
     float time = 0;
     
+    AVAssetTrack *prsSourceAudioTrack = nil;
+    
     for (int i = 0; i < videos.count; i++) {
         
         NSURL *url = videos[i];
@@ -1795,8 +1797,9 @@ static NSString *const kCompositionPath = @"GLComposition";
         
         if (sourceAudioTrack) {
             [compositionAudioTrack insertTimeRange:sourceAudioTrack.timeRange ofTrack:[[sourceAsset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0] atTime:currentCompDuration error:nil];
+            prsSourceAudioTrack = sourceAudioTrack;
         }else{
-            if (videos.count > 1) {
+            if (prsSourceAudioTrack) {
                 [compositionAudioTrack insertEmptyTimeRange:CMTimeRangeMake(currentCompDuration, sourceVideoTrack.timeRange.duration)];
             }else{
 //                [composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
