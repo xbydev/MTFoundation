@@ -230,7 +230,7 @@ static NSString *const kCompositionPath = @"GLComposition";
     if (degree == 90) {
         if (isFirst) {
             t1 = CGAffineTransformMakeTranslation(assetVideoTrack.naturalSize.width, assetVideoTrack.naturalSize.height);
-            t2 = CGAffineTransformRotate(t1,M_PI);
+            t2 = CGAffineTransformRotate(t1,M_PI_2);
             mutableVideoComposition.renderSize = CGSizeMake(assetVideoTrack.naturalSize.width,assetVideoTrack.naturalSize.height);
         }else{
             t1 = CGAffineTransformMakeTranslation(assetVideoTrack.naturalSize.height,0.0);
