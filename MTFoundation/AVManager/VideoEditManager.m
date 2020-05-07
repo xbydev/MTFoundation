@@ -7,7 +7,8 @@
 //
 
 #import "VideoEditManager.h"
-#import <MTFoundation/SelectAssetInfo.h>
+//#import <MTFoundation/SelectAssetInfo.h>
+#import "SelectAssetInfo.h"
 #import "StickerInfo.h"
 
 @interface VideoEditManager()
